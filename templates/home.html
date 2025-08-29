@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Welcome to Gradly{% endblock %}
+{% block content %}
+<section class="text-center">
+    <h1 class="text-4xl md:text-6xl font-bold text-indigo-700 mb-4">Gradly</h1>
+    <p class="text-lg md:text-xl text-gray-700 mb-8">
+        Your MBA Buddy for Career, Academics, and More.
+    </p>
+    {% if closest_task %}
+    <div class="bg-white p-4 rounded-lg shadow-md max-w-lg mx-auto mb-8">
+        <h3 class="text-lg font-semibold text-indigo-700">Your Next Deadline</h3>
+        <p class="text-gray-800">{{ closest_task.title }}</p>
+        <p class="text-sm text-gray-600">Due: {{ closest_task.due_date.strftime('%d %b %Y') }}</p>
+    </div>
+    {% endif %}
+    <a href="{{ url_for('dashboard.dashboard') }}"
+        class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg shadow-lg text-lg">
+        Go to Dashboard
+    </a>
+</section>
+
+<section class="grid md:grid-cols-3 gap-8 mt-16">
+    <!-- Student Profiles -->
+    <a href="{{ url_for('profile.view_profile', user_id=current_user.id) }}"
+        class="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 block">
+        <h3 class="text-xl font-semibold mb-2 text-indigo-700">Student Profiles</h3>
+        <p>Manage your resume, CGPA, and contact details in one place.</p>
+    </a>
+
+    <!-- To-Do Tracker -->
+    <a href="{{ url_for('dashboard.dashboard') }}"
+        class="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 block">
+        <h3 class="text-xl font-semibold mb-2 text-indigo-700">To-Do Tracker</h3>
+        <p>Stay on top of assignments, deadlines, and career prep.</p>
+    </a>
+
+    <!-- Events & Committees -->
+    <a href="{{ url_for('events.add_event') }}"
+        class="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 block">
+        <h3 class="text-xl font-semibold mb-2 text-indigo-700">Events & Committees</h3>
+        <p>Know what's happening around campus at a glance.</p>
+    </a>
+</section>
+{% endblock %}

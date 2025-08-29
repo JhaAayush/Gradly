@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Gradly Portal{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-blue-50 via-white to-indigo-100 text-gray-800 flex flex-col min-h-screen">
+
+    <!-- Navbar -->
+    <nav class="bg-indigo-600 shadow-md">
+        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <!-- Left: Logo -->
+            <a href="{{ url_for('home') }}" class="text-white font-bold text-xl tracking-wide">Gradly</a>
+
+            <!-- Center: Search Bar -->
+            {% if current_user.is_authenticated %}
+            <div class="relative w-64 hidden md:block">
+                <input id="search-bar" type="text" placeholder="Search profiles..."
+                    class="w-full pl-10 pr-4 py-2 rounded-full border focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <i class="fa fa-search absolute left-3 top-2.5 text-gray-400"></i>
+                <div id="search-results"
+                    class="absolute left-0 mt-2 w-full bg-white border rounded-lg shadow-lg hidden z-50"></div>
+            </div>
+            {% endif %}
+
+            <!-- Right: Auth Links -->
+            <div class="space-x-4">
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('dashboard.dashboard') }}" class="text-white hover:underline">Dashboard</a>
+                <a href="{{ url_for('auth.logout') }}" class="text-white hover:underline">Logout</a>
+                {% else %}
+                <a href="{{ url_for('auth.login') }}" class="text-white hover:underline">Login</a>
+                <a href="{{ url_for('auth.register') }}" class="text-white hover:underline">Register</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    <div class="container mx-auto px-6 mt-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="p-4 mb-4 text-sm rounded-lg
+            {% if category == 'success' %} bg-green-100 text-green-800
+            {% elif category == 'danger' %} bg-red-100 text-red-800
+            {% elif category == 'info' %} bg-blue-100 text-blue-800
+            {% else %} bg-gray-100 text-gray-800 {% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-8 flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-indigo-600 text-white text-center py-4 mt-auto">
+        <p>© 2025 Gradly Portal · Built for IIM Amritsar</p>
+    </footer>
+
+    <!-- Search JS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchBar = document.getElementById('search-bar');
+            const resultsDiv = document.getElementById('search-results');
+
+            if (searchBar) {
+                let debounceTimeout;
+
+                searchBar.addEventListener('input', function () {
+                    clearTimeout(debounceTimeout);
+                    const query = this.value.trim();
+
+                    if (!query) {
+                        resultsDiv.classList.add('hidden');
+                        return;
+                    }
+
+                    debounceTimeout = setTimeout(() => {
+                        fetch(`/search?q=${query}`)
+                            .then(res => res.json())
+                            .then(data => {
+                                resultsDiv.innerHTML = '';
+                                if (data.length === 0) {
+                                    resultsDiv.innerHTML = '<p class="p-2 text-gray-500">No results found</p>';
+                                } else {
+                                    data.forEach(user => {
+                                        const item = document.createElement('a');
+                                        item.href = `/profile/${user.id}`;
+                                        item.className = 'block px-4 py-2 hover:bg-indigo-100';
+                                        item.textContent = user.name;
+                                        resultsDiv.appendChild(item);
+                                    });
+                                }
+                                resultsDiv.classList.remove('hidden');
+                            });
+                    }, 300);
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!resultsDiv.contains(e.target) && e.target !== searchBar) {
+                        resultsDiv.classList.add('hidden');
+                    }
+                });
+            }
+        });
+    </script>
+
+</body>
+
+</html>
