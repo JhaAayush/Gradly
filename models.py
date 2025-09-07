@@ -5,6 +5,7 @@ from datetime import datetime
 db = SQLAlchemy()
 
 # models.py
+
 class User(db.Model, UserMixin):
     id = db.Column(db.String(15), primary_key=True)
     name = db.Column(db.String(100), nullable=False)
@@ -13,12 +14,19 @@ class User(db.Model, UserMixin):
     cgpa = db.Column(db.Float, nullable=True)
     resume = db.Column(db.String(200), nullable=True)
     phone = db.Column(db.String(20), nullable=True)
-    profile_pic = db.Column(db.String(200), nullable=True)  # File path
+    profile_pic = db.Column(db.String(200), nullable=True)
 
     # Privacy flags
     show_email = db.Column(db.Boolean, default=True)
     show_phone = db.Column(db.Boolean, default=True)
     show_cgpa = db.Column(db.Boolean, default=True)
+
+    # 🔑 Relationships
+    work_experiences = db.relationship('WorkExperience', backref='user', lazy=True)
+    internships = db.relationship('Internship', backref='user', lazy=True)
+    certifications = db.relationship('Certification', backref='user', lazy=True)
+    skills = db.relationship('Skill', backref='user', lazy=True)
+    hobbies = db.relationship('Hobby', backref='user', lazy=True)
 
 
 class Task(db.Model):
@@ -39,3 +47,40 @@ class StudentBody(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150), nullable=False)
     description = db.Column(db.Text)
+
+# models.py
+
+# models.py
+
+# models.py
+
+class WorkExperience(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    organization = db.Column(db.String(200), nullable=False)
+    role = db.Column(db.String(200), nullable=True)
+    start_date = db.Column(db.Date, nullable=True)
+    end_date = db.Column(db.Date, nullable=True)
+    user_id = db.Column(db.String(15), db.ForeignKey('user.id'), nullable=False)
+
+class Internship(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    organization = db.Column(db.String(200), nullable=False)
+    role = db.Column(db.String(200), nullable=True)
+    start_date = db.Column(db.Date, nullable=True)
+    end_date = db.Column(db.Date, nullable=True)
+    user_id = db.Column(db.String(15), db.ForeignKey('user.id'), nullable=False)
+
+class Certification(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    user_id = db.Column(db.String(15), db.ForeignKey('user.id'), nullable=False)
+
+class Skill(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    user_id = db.Column(db.String(15), db.ForeignKey('user.id'), nullable=False)
+
+class Hobby(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    user_id = db.Column(db.String(15), db.ForeignKey('user.id'), nullable=False)

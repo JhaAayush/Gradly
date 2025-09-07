@@ -1,19 +1,31 @@
 {% extends "base.html" %}
 {% block title %}Edit Task{% endblock %}
 {% block content %}
-<div class="max-w-lg mx-auto bg-white p-8 rounded-xl shadow-lg">
-    <h2 class="text-2xl font-bold text-indigo-700 mb-6">Edit Task</h2>
-    <form method="POST">
+<div class="max-w-xl mx-auto bg-white/70 backdrop-blur-lg p-8 rounded-2xl shadow-2xl border border-slate-200">
+    <div class="text-center mb-8">
+        <h2 class="text-3xl font-extrabold text-slate-800">Edit Task</h2>
+        <p class="text-slate-500">Make changes to your task below.</p>
+    </div>
+    <form method="POST" class="space-y-6">
         {{ form.hidden_tag() }}
-        <div class="mb-4">
-            {{ form.title.label(class="block text-gray-700 mb-2") }}
-            {{ form.title(class="w-full p-2 border rounded-lg focus:ring focus:ring-indigo-300") }}
+        <div>
+            {{ form.title.label(class="block text-sm font-semibold text-slate-600 mb-2") }}
+            {{ form.title(class="w-full p-3 bg-slate-100 border-transparent rounded-lg focus:ring-2 focus:ring-sky-500
+            transition") }}
         </div>
-        <div class="mb-4">
-            {{ form.due_date.label(class="block text-gray-700 mb-2") }}
-            {{ form.due_date(class="w-full p-2 border rounded-lg focus:ring focus:ring-indigo-300", type="date") }}
+        <div>
+            {{ form.due_date.label(class="block text-sm font-semibold text-slate-600 mb-2") }}
+            {{ form.due_date(class="w-full p-3 bg-slate-100 border-transparent rounded-lg focus:ring-2
+            focus:ring-sky-500 transition text-slate-500", type="date") }}
         </div>
-        {{ form.submit(class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700") }}
+        <div class="flex items-center gap-4 pt-4">
+            <a href="{{ url_for('dashboard.dashboard') }}"
+                class="w-1/2 text-center bg-slate-200 text-slate-700 px-4 py-3 rounded-lg font-semibold hover:bg-slate-300 transition-all">
+                Cancel
+            </a>
+            {{ form.submit(class="w-1/2 bg-slate-800 text-white px-4 py-3 rounded-lg font-semibold hover:bg-sky-500
+            transition-all cursor-pointer") }}
+        </div>
     </form>
 </div>
 {% endblock %}

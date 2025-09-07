@@ -1,46 +1,180 @@
 {% extends "base.html" %}
 {% block title %}Edit Profile{% endblock %}
 {% block content %}
-<div class="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-lg">
-    <h2 class="text-2xl font-bold text-indigo-700 mb-6">Edit Your Profile</h2>
-    <form method="POST" enctype="multipart/form-data">
-        {{ form.hidden_tag() }}
-
-        <div class="mb-4">
-            {{ form.name.label(class="block text-gray-700 mb-2") }}
-            {{ form.name(class="w-full p-2 border rounded-lg focus:ring focus:ring-indigo-300") }}
-        </div>
-
-        <div class="mb-4">
-            {{ form.email.label(class="block text-gray-700 mb-2") }}
-            {{ form.email(class="w-full p-2 border rounded-lg focus:ring focus:ring-indigo-300") }}
-        </div>
-
-        <div class="mb-4">
-            {{ form.phone.label(class="block text-gray-700 mb-2") }}
-            {{ form.phone(class="w-full p-2 border rounded-lg focus:ring focus:ring-indigo-300") }}
-        </div>
-
-        <div class="mb-4">
-            {{ form.cgpa.label(class="block text-gray-700 mb-2") }}
-            {{ form.cgpa(class="w-full p-2 border rounded-lg focus:ring focus:ring-indigo-300") }}
-        </div>
-
-        <div class="mb-4">
-            {{ form.profile_pic.label(class="block text-gray-700 mb-2") }}
-            {{ form.profile_pic(class="w-full p-2 border rounded-lg focus:ring focus:ring-indigo-300") }}
-        </div>
-
-        <h3 class="text-lg font-semibold mt-6 mb-4">Privacy Settings</h3>
-        <div class="space-y-2">
-            <div>{{ form.show_email() }} {{ form.show_email.label }}</div>
-            <div>{{ form.show_phone() }} {{ form.show_phone.label }}</div>
-            <div>{{ form.show_cgpa() }} {{ form.show_cgpa.label }}</div>
-        </div>
-
-        <div class="mt-6">
-            {{ form.submit(class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700") }}
-        </div>
-    </form>
+<div class="mb-8">
+    <h1 class="text-4xl font-extrabold text-slate-800">Manage Your Profile</h1>
+    <p class="text-slate-500 mt-1">Keep your information up-to-date to make the best impression.</p>
 </div>
+
+<div class="max-w-6xl mx-auto space-y-10">
+
+    <!-- Profile Details Form -->
+    <div class="bg-white/70 backdrop-blur-lg p-8 rounded-2xl shadow-2xl border border-slate-200">
+        <h2 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-3"><i
+                class="fa fa-user-edit text-sky-500"></i> Profile Details</h2>
+        <form method="POST" enctype="multipart/form-data" class="space-y-6">
+            {{ profile_form.hidden_tag() }}
+
+            <div class="grid md:grid-cols-2 gap-x-6 gap-y-4">
+                <div>
+                    {{ profile_form.name.label(class="block text-sm font-semibold text-slate-600 mb-2") }}
+                    {{ profile_form.name(class="w-full p-3 bg-slate-100 border-transparent rounded-lg focus:ring-2
+                    focus:ring-sky-500 transition") }}
+                </div>
+                <div>
+                    {{ profile_form.email.label(class="block text-sm font-semibold text-slate-600 mb-2") }}
+                    {{ profile_form.email(class="w-full p-3 bg-slate-100 border-transparent rounded-lg focus:ring-2
+                    focus:ring-sky-500 transition") }}
+                </div>
+                <div>
+                    {{ profile_form.phone.label(class="block text-sm font-semibold text-slate-600 mb-2") }}
+                    {{ profile_form.phone(class="w-full p-3 bg-slate-100 border-transparent rounded-lg focus:ring-2
+                    focus:ring-sky-500 transition") }}
+                </div>
+                <div>
+                    {{ profile_form.cgpa.label(class="block text-sm font-semibold text-slate-600 mb-2") }}
+                    {{ profile_form.cgpa(class="w-full p-3 bg-slate-100 border-transparent rounded-lg focus:ring-2
+                    focus:ring-sky-500 transition") }}
+                </div>
+                <div>
+                    {{ profile_form.profile_pic.label(class="block text-sm font-semibold text-slate-600 mb-2") }}
+                    {{ profile_form.profile_pic(class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4
+                    file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-50 file:text-sky-700
+                    hover:file:bg-sky-100") }}
+                </div>
+                <div>
+                    {{ profile_form.resume.label(class="block text-sm font-semibold text-slate-600 mb-2") }}
+                    {{ profile_form.resume(class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4
+                    file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-50 file:text-sky-700
+                    hover:file:bg-sky-100") }}
+                </div>
+            </div>
+
+            <div class="border-t border-slate-200 pt-6">
+                <h3 class="text-lg font-bold text-slate-700 mb-3">Privacy Settings</h3>
+                <div class="flex flex-wrap gap-x-6 gap-y-2">
+                    <label class="flex items-center gap-2 text-slate-600 cursor-pointer">{{
+                        profile_form.show_email(class="h-4 w-4 rounded border-slate-300 text-sky-600
+                        focus:ring-sky-500") }} Show Email</label>
+                    <label class="flex items-center gap-2 text-slate-600 cursor-pointer">{{
+                        profile_form.show_phone(class="h-4 w-4 rounded border-slate-300 text-sky-600
+                        focus:ring-sky-500") }} Show Phone</label>
+                    <label class="flex items-center gap-2 text-slate-600 cursor-pointer">{{
+                        profile_form.show_cgpa(class="h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-500")
+                        }} Show CGPA</label>
+                </div>
+            </div>
+
+            <div class="text-right pt-4">
+                {{ profile_form.submit(value="Save Profile Changes", class="bg-slate-800 text-white px-6 py-3 rounded-lg
+                font-semibold hover:bg-sky-500 transition-all cursor-pointer") }}
+            </div>
+        </form>
+    </div>
+
+    <!-- Tabbed Section for Other Forms -->
+    <div x-data="{ tab: 'work' }"
+        class="bg-white/70 backdrop-blur-lg p-8 rounded-2xl shadow-2xl border border-slate-200">
+        <div class="mb-6 border-b border-slate-200">
+            <nav class="-mb-px flex space-x-6">
+                <button @click="tab = 'work'"
+                    :class="{'border-sky-500 text-sky-600': tab === 'work', 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300': tab !== 'work'}"
+                    class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">Work
+                    Experience</button>
+                <button @click="tab = 'intern'"
+                    :class="{'border-sky-500 text-sky-600': tab === 'intern', 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300': tab !== 'intern'}"
+                    class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">Internships</button>
+                <button @click="tab = 'certs'"
+                    :class="{'border-sky-500 text-sky-600': tab === 'certs', 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300': tab !== 'certs'}"
+                    class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">Certifications</button>
+                <button @click="tab = 'skills'"
+                    :class="{'border-sky-500 text-sky-600': tab === 'skills', 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300': tab !== 'skills'}"
+                    class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">Skills</button>
+                <button @click="tab = 'hobbies'"
+                    :class="{'border-sky-500 text-sky-600': tab === 'hobbies', 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300': tab !== 'hobbies'}"
+                    class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">Hobbies</button>
+            </nav>
+        </div>
+
+        <!-- Work Experience Form -->
+        <div x-show="tab === 'work'">
+            <h3 class="text-xl font-bold text-slate-700 mb-4">Add Work Experience</h3>
+            <form method="POST" class="space-y-4">
+                {{ work_form.hidden_tag() }}
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>{{ work_form.organization.label(class="text-sm font-semibold") }} {{
+                        work_form.organization(class="w-full mt-1 p-2 bg-slate-100 rounded-lg") }}</div>
+                    <div>{{ work_form.role.label(class="text-sm font-semibold") }} {{ work_form.role(class="w-full mt-1
+                        p-2 bg-slate-100 rounded-lg") }}</div>
+                    <div>{{ work_form.start_date.label(class="text-sm font-semibold") }} {{
+                        work_form.start_date(class="w-full mt-1 p-2 bg-slate-100 rounded-lg", type="date") }}</div>
+                    <div>{{ work_form.end_date.label(class="text-sm font-semibold") }} {{
+                        work_form.end_date(class="w-full mt-1 p-2 bg-slate-100 rounded-lg", type="date") }}</div>
+                </div>
+                {{ work_form.submit(value="Add Experience", class="bg-sky-500 text-white px-4 py-2 rounded-lg
+                font-semibold hover:bg-sky-600 transition cursor-pointer") }}
+            </form>
+        </div>
+
+        <!-- Internship Form -->
+        <div x-show="tab === 'intern'" style="display: none;">
+            <h3 class="text-xl font-bold text-slate-700 mb-4">Add Internship</h3>
+            <form method="POST" class="space-y-4">
+                {{ internship_form.hidden_tag() }}
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>{{ internship_form.organization.label(class="text-sm font-semibold") }} {{
+                        internship_form.organization(class="w-full mt-1 p-2 bg-slate-100 rounded-lg") }}</div>
+                    <div>{{ internship_form.role.label(class="text-sm font-semibold") }} {{
+                        internship_form.role(class="w-full mt-1 p-2 bg-slate-100 rounded-lg") }}</div>
+                    <div>{{ internship_form.start_date.label(class="text-sm font-semibold") }} {{
+                        internship_form.start_date(class="w-full mt-1 p-2 bg-slate-100 rounded-lg", type="date") }}
+                    </div>
+                    <div>{{ internship_form.end_date.label(class="text-sm font-semibold") }} {{
+                        internship_form.end_date(class="w-full mt-1 p-2 bg-slate-100 rounded-lg", type="date") }}</div>
+                </div>
+                {{ internship_form.submit(value="Add Internship", class="bg-sky-500 text-white px-4 py-2 rounded-lg
+                font-semibold hover:bg-sky-600 transition cursor-pointer") }}
+            </form>
+        </div>
+
+        <!-- Certification Form -->
+        <div x-show="tab === 'certs'" style="display: none;">
+            <h3 class="text-xl font-bold text-slate-700 mb-4">Add Certification</h3>
+            <form method="POST">
+                {{ cert_form.hidden_tag() }}
+                {{ cert_form.title.label(class="text-sm font-semibold") }}
+                {{ cert_form.title(class="w-full mt-1 p-2 bg-slate-100 rounded-lg") }}
+                {{ cert_form.submit(value="Add Certification", class="mt-4 bg-sky-500 text-white px-4 py-2 rounded-lg
+                font-semibold hover:bg-sky-600 transition cursor-pointer") }}
+            </form>
+        </div>
+
+        <!-- Skill Form -->
+        <div x-show="tab === 'skills'" style="display: none;">
+            <h3 class="text-xl font-bold text-slate-700 mb-4">Add a Skill</h3>
+            <form method="POST">
+                {{ skill_form.hidden_tag() }}
+                {{ skill_form.name.label(class="text-sm font-semibold") }}
+                {{ skill_form.name(class="w-full mt-1 p-2 bg-slate-100 rounded-lg") }}
+                {{ skill_form.submit(value="Add Skill", class="mt-4 bg-sky-500 text-white px-4 py-2 rounded-lg
+                font-semibold hover:bg-sky-600 transition cursor-pointer") }}
+            </form>
+        </div>
+
+        <!-- Hobby Form -->
+        <div x-show="tab === 'hobbies'" style="display: none;">
+            <h3 class="text-xl font-bold text-slate-700 mb-4">Add a Hobby</h3>
+            <form method="POST">
+                {{ hobby_form.hidden_tag() }}
+                {{ hobby_form.name.label(class="text-sm font-semibold") }}
+                {{ hobby_form.name(class="w-full mt-1 p-2 bg-slate-100 rounded-lg") }}
+                {{ hobby_form.submit(value="Add Hobby", class="mt-4 bg-sky-500 text-white px-4 py-2 rounded-lg
+                font-semibold hover:bg-sky-600 transition cursor-pointer") }}
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Alpine.js for the tabs -->
+<script src="//unpkg.com/alpinejs" defer></script>
 {% endblock %}

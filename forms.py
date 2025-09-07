@@ -3,6 +3,7 @@ from wtforms import StringField, PasswordField, SubmitField, FileField, FloatFie
 from wtforms.validators import DataRequired, Email, Length
 from wtforms.fields import DateField
 from wtforms import BooleanField, TelField
+from flask_wtf.file import FileField, FileAllowed
 
 class RegisterForm(FlaskForm):
     roll_number = StringField('Roll Number', validators=[DataRequired(), Length(min=5, max=20)])
@@ -30,16 +31,52 @@ class EventForm(FlaskForm):
 
 # forms.py
 
+
+# forms.py
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField, FileField, BooleanField, FloatField
+from wtforms.validators import DataRequired, Email, Optional
+
 class EditProfileForm(FlaskForm):
-    name = StringField('Name', validators=[DataRequired(), Length(min=2, max=100)])
-    email = StringField('Email', validators=[DataRequired(), Email()])
-    phone = TelField('Phone', validators=[Length(min=0, max=20)])
-    cgpa = FloatField('CGPA')
-    profile_pic = FileField('Profile Picture')
+    name = StringField("Name", validators=[DataRequired()])
+    email = StringField("Email", validators=[DataRequired(), Email()])
+    phone = StringField("Phone", validators=[Optional()])
+    cgpa = FloatField("CGPA", validators=[Optional()])
+    profile_pic = FileField("Profile Picture")
+    resume = FileField("Resume (PDF)")
 
-    # Privacy toggles
-    show_email = BooleanField('Show Email')
-    show_phone = BooleanField('Show Phone')
-    show_cgpa = BooleanField('Show CGPA')
+    show_email = BooleanField("Show Email")
+    show_phone = BooleanField("Show Phone")
+    show_cgpa = BooleanField("Show CGPA")
 
-    submit = SubmitField('Save Changes')
+    submit = SubmitField("Save Changes")
+
+# forms.py
+from wtforms import DateField
+
+class WorkExperienceForm(FlaskForm):
+    organization = StringField("Organization", validators=[DataRequired()])
+    role = StringField("Role", validators=[Optional()])
+    start_date = DateField("Start Date", format='%Y-%m-%d', validators=[Optional()])
+    end_date = DateField("End Date", format='%Y-%m-%d', validators=[Optional()])
+    submit = SubmitField("Add Work Experience")
+
+class InternshipForm(FlaskForm):
+    organization = StringField("Organization", validators=[DataRequired()])
+    role = StringField("Role", validators=[Optional()])
+    start_date = DateField("Start Date", format='%Y-%m-%d', validators=[Optional()])
+    end_date = DateField("End Date", format='%Y-%m-%d', validators=[Optional()])
+    submit = SubmitField("Add Internship")
+
+class CertificationForm(FlaskForm):
+    title = StringField("Certification", validators=[DataRequired()])
+    submit = SubmitField("Add Certification")
+
+class SkillForm(FlaskForm):
+    name = StringField("Skill", validators=[DataRequired()])
+    submit = SubmitField("Add Skill")
+
+class HobbyForm(FlaskForm):
+    name = StringField("Hobby", validators=[DataRequired()])
+    submit = SubmitField("Add Hobby")
+

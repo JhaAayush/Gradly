@@ -1,10 +1,11 @@
 # routes/profile.py
 from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app, jsonify
 from flask_login import login_required, current_user
-from models import db, User
-from forms import EditProfileForm
+from models import db, User, WorkExperience, Internship, Certification, Skill, Hobby
+from forms import EditProfileForm, WorkExperienceForm, InternshipForm, CertificationForm, SkillForm, HobbyForm
 from werkzeug.utils import secure_filename
 import os
+from resume_parser import parse_resume
 
 profile_bp = Blueprint('profile', __name__)
 
@@ -14,33 +15,121 @@ def view_profile(user_id):
     user = User.query.get_or_404(user_id)
     return render_template('profile.html', user=user)
 
+
 @profile_bp.route('/profile/edit', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
-    form = EditProfileForm(obj=current_user)
-    if form.validate_on_submit():
-        # Update text fields
-        current_user.name = form.name.data
-        current_user.email = form.email.data
-        current_user.phone = form.phone.data
-        current_user.cgpa = form.cgpa.data
+    profile_form = EditProfileForm()
+    work_form = WorkExperienceForm()
+    internship_form = InternshipForm()
+    cert_form = CertificationForm()
+    skill_form = SkillForm()
+    hobby_form = HobbyForm()
 
-        # Privacy flags
-        current_user.show_email = form.show_email.data
-        current_user.show_phone = form.show_phone.data
-        current_user.show_cgpa = form.show_cgpa.data
+    if request.method == 'GET':
+        # Prefill only non-file fields
+        profile_form.name.data = current_user.name
+        profile_form.email.data = current_user.email
+        profile_form.phone.data = current_user.phone
+        profile_form.cgpa.data = current_user.cgpa
+        profile_form.show_email.data = current_user.show_email
+        profile_form.show_phone.data = current_user.show_phone
+        profile_form.show_cgpa.data = current_user.show_cgpa
 
-        # Handle profile pic upload
-        if form.profile_pic.data:
-            filename = secure_filename(form.profile_pic.data.filename)
+    if profile_form.submit.data and profile_form.validate_on_submit():
+        current_user.name = profile_form.name.data
+        current_user.email = profile_form.email.data
+        current_user.phone = profile_form.phone.data
+        current_user.cgpa = profile_form.cgpa.data
+        current_user.show_email = profile_form.show_email.data
+        current_user.show_phone = profile_form.show_phone.data
+        current_user.show_cgpa = profile_form.show_cgpa.data
+
+        # ✅ Handle profile picture upload
+        if profile_form.profile_pic.data and hasattr(profile_form.profile_pic.data, "filename"):
+            file = profile_form.profile_pic.data
+            filename = secure_filename(file.filename)
             filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-            form.profile_pic.data.save(filepath)
+            file.save(filepath)
             current_user.profile_pic = f'uploads/{filename}'
 
+        # ✅ Handle resume upload
+        if profile_form.resume.data and hasattr(profile_form.resume.data, "filename"):
+            file = profile_form.resume.data
+            filename = secure_filename(file.filename)
+            filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+            current_user.resume = f'uploads/{filename}'
+
         db.session.commit()
-        flash('Profile updated successfully!', 'success')
-        return redirect(url_for('profile.view_profile', user_id=current_user.id))
-    return render_template('edit_profile.html', form=form)
+        flash("Profile updated!", "success")
+        return redirect(url_for("profile.edit_profile"))
+
+        db.session.commit()
+        flash("Profile updated!", "success")
+        return redirect(url_for('profile.edit_profile'))
+
+    # Add work experience
+    if work_form.submit.data and work_form.validate_on_submit():
+        work = WorkExperience(
+            organization=work_form.organization.data,
+            role=work_form.role.data,
+            start_date=work_form.start_date.data,
+            end_date=work_form.end_date.data,
+            user_id=current_user.id
+        )
+        db.session.add(work)
+        db.session.commit()
+        flash("Work experience added!", "success")
+        return redirect(url_for('profile.edit_profile'))
+
+    # Add internship
+    if internship_form.submit.data and internship_form.validate_on_submit():
+        internship = Internship(
+            organization=internship_form.organization.data,
+            role=internship_form.role.data,
+            start_date=internship_form.start_date.data,
+            end_date=internship_form.end_date.data,
+            user_id=current_user.id
+        )
+        db.session.add(internship)
+        db.session.commit()
+        flash("Internship added!", "success")
+        return redirect(url_for('profile.edit_profile'))
+
+    # Add certification
+    if cert_form.submit.data and cert_form.validate_on_submit():
+        cert = Certification(title=cert_form.title.data, user_id=current_user.id)
+        db.session.add(cert)
+        db.session.commit()
+        flash("Certification added!", "success")
+        return redirect(url_for('profile.edit_profile'))
+
+    # Add skill
+    if skill_form.submit.data and skill_form.validate_on_submit():
+        skill = Skill(name=skill_form.name.data, user_id=current_user.id)
+        db.session.add(skill)
+        db.session.commit()
+        flash("Skill added!", "success")
+        return redirect(url_for('profile.edit_profile'))
+
+    # Add hobby
+    if hobby_form.submit.data and hobby_form.validate_on_submit():
+        hobby = Hobby(name=hobby_form.name.data, user_id=current_user.id)
+        db.session.add(hobby)
+        db.session.commit()
+        flash("Hobby added!", "success")
+        return redirect(url_for('profile.edit_profile'))
+
+    return render_template(
+        "edit_profile.html",
+        profile_form=profile_form,
+        work_form=work_form,
+        internship_form=internship_form,
+        cert_form=cert_form,
+        skill_form=skill_form,
+        hobby_form=hobby_form
+    )
 
 
 @profile_bp.route('/search')
