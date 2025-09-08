@@ -80,3 +80,23 @@ class HobbyForm(FlaskForm):
     name = StringField("Hobby", validators=[DataRequired()])
     submit = SubmitField("Add Hobby")
 
+from flask_wtf import FlaskForm
+from wtforms import StringField, TextAreaField, FileField, SubmitField
+from wtforms.validators import DataRequired, Length
+
+class BodyEventForm(FlaskForm):
+    title = StringField("Title", validators=[DataRequired(), Length(max=250)])
+    description = TextAreaField("Description", validators=[Length(max=1000)])
+    poster = FileField("Poster")  # optional, allow uploads
+    date = DateField("Event Date", format="%Y-%m-%d", validators=[DataRequired()])   # ✅ new
+    submit = SubmitField("Save Event")
+
+from wtforms import StringField, PasswordField, SubmitField
+from wtforms.validators import DataRequired, Email
+from flask_wtf import FlaskForm
+
+
+class BodyLoginForm(FlaskForm):
+    email = StringField("Email", validators=[DataRequired(), Email()])
+    password = PasswordField("Password", validators=[DataRequired()])
+    submit = SubmitField("Login")

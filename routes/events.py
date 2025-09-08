@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash
 from flask_login import login_required
-from models import db, Event
-from forms import EventForm
+from models import db, BodyEvent, StudentBody
+from forms import BodyEventForm
 
 events_bp = Blueprint('events', __name__)
 

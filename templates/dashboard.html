@@ -3,22 +3,76 @@
 {% block content %}
 <div class="mb-8">
     <h1 class="text-4xl font-extrabold text-slate-800">Welcome back, {{ current_user.name.split(' ')[0] }}!</h1>
-    <p class="text-slate-500 mt-1">Here's your overview for today, September 7, 2025.</p>
+    <p id="current-date" class="text-slate-500 mt-1">Here's your overview for today.</p>
 </div>
 
 <div class="grid md:grid-cols-3 gap-8">
-    <a href="{{ url_for('profile.view_profile', user_id=current_user.id) }}"
-        class="group block bg-white/70 backdrop-blur-lg p-6 rounded-2xl shadow-lg border border-slate-200 hover:border-sky-400 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
-        <div class="flex justify-between items-start">
-            <h2 class="text-xl font-bold text-slate-800 mb-4">Your Profile</h2>
-            <i class="fa fa-arrow-right text-slate-400 group-hover:text-sky-500 transition-colors"></i>
+    <div class="flex flex-col bg-white/70 backdrop-blur-lg p-6 rounded-2xl shadow-lg border border-slate-200">
+        <h2 class="text-xl font-bold text-slate-800 mb-4">Your Profile</h2>
+
+        <div class="flex items-center space-x-4 mb-4">
+            <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-sky-200 shadow-md bg-slate-200">
+                {% if current_user.profile_pic %}
+                <img src="{{ url_for('static', filename=current_user.profile_pic) }}" alt="Profile Picture"
+                    class="w-full h-full object-cover">
+                {% else %}
+                <img src="{{ url_for('static', filename='default-profile.png') }}" alt="Default Picture"
+                    class="w-full h-full object-cover">
+                {% endif %}
+            </div>
+            <div>
+                <p class="font-bold text-slate-800">{{ current_user.name }}</p>
+                <p class="text-sm text-slate-500">{{ current_user.id }}</p>
+            </div>
         </div>
-        <div class="space-y-2 text-slate-600">
-            <p><strong class="font-semibold text-slate-700">Roll No:</strong> {{ current_user.id }}</p>
-            <p><strong class="font-semibold text-slate-700">Email:</strong> {{ current_user.email }}</p>
-            <p><strong class="font-semibold text-slate-700">CGPA:</strong> {{ current_user.cgpa or 'N/A' }}</p>
+
+        {% set total_items = 8 %}
+        {% set completed_items = 0 %}
+        {% if current_user.profile_pic %}{% set completed_items = completed_items + 1 %}{% endif %}
+        {% if current_user.resume %}{% set completed_items = completed_items + 1 %}{% endif %}
+        {% if current_user.phone %}{% set completed_items = completed_items + 1 %}{% endif %}
+        {% if current_user.cgpa %}{% set completed_items = completed_items + 1 %}{% endif %}
+        {% if current_user.work_experiences|length > 0 %}{% set completed_items = completed_items + 1 %}{% endif %}
+        {% if current_user.internships|length > 0 %}{% set completed_items = completed_items + 1 %}{% endif %}
+        {% if current_user.skills|length > 0 %}{% set completed_items = completed_items + 1 %}{% endif %}
+        {% if current_user.certifications|length > 0 %}{% set completed_items = completed_items + 1 %}{% endif %}
+        {% set percentage = (completed_items / total_items * 100)|round|int %}
+
+        <div class="mb-4">
+            <div class="flex justify-between mb-1">
+                <span class="text-sm font-medium text-slate-600">Profile Strength</span>
+                <span class="text-sm font-medium text-sky-600">{{ percentage }}%</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-2.5">
+                <div class="bg-sky-500 h-2.5 rounded-full transition-all duration-500" style="width: {{percentage}}%">
+                </div>
+            </div>
         </div>
-    </a>
+
+        <div class="grid grid-cols-2 gap-4 text-center border-t border-slate-200 pt-4 mb-4">
+            <div>
+                <p class="text-2xl font-bold text-slate-800">{{ current_user.skills|length }}</p>
+                <p class="text-xs text-slate-500">Skills Listed</p>
+            </div>
+            <div>
+                <p class="text-2xl font-bold text-slate-800">{{ (current_user.work_experiences|length) +
+                    (current_user.internships|length) }}</p>
+                <p class="text-xs text-slate-500">Experiences</p>
+            </div>
+        </div>
+
+        <div class="mt-auto flex gap-3">
+            <a href="{{ url_for('profile.edit_profile') }}"
+                class="w-1/2 text-center bg-slate-200 text-slate-700 px-4 py-2 rounded-lg font-semibold hover:bg-slate-300 transition-all text-sm">
+                Edit
+            </a>
+            <a href="{{ url_for('profile.view_profile', user_id=current_user.id) }}"
+                class="w-1/2 text-center bg-slate-800 text-white px-4 py-2 rounded-lg font-semibold hover:bg-sky-500 transition-all text-sm">
+                View Profile
+            </a>
+        </div>
+    </div>
+
 
     <div class="bg-white/70 backdrop-blur-lg p-6 rounded-2xl shadow-lg border border-slate-200">
         <h2 class="text-xl font-bold text-slate-800 mb-4">Your Tasks</h2>
@@ -91,4 +145,16 @@
         </ul>
     </div>
 </div>
+
+<script>
+    // Simple script to set the current date dynamically
+    document.addEventListener('DOMContentLoaded', () => {
+        const dateElement = document.getElementById('current-date');
+        if (dateElement) {
+            const today = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            dateElement.textContent = `Here's your overview for today, ${today.toLocaleDateString('en-US', options)}.`;
+        }
+    });
+</script>
 {% endblock %}

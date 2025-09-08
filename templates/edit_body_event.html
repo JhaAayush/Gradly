@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Edit Event{% endblock %}
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <div class="bg-white p-6 rounded-xl shadow-md">
+        <h2 class="text-xl font-semibold mb-4">Edit Event</h2>
+        <form method="POST" enctype="multipart/form-data">
+            <input name="title" value="{{ event.title }}" class="w-full p-2 border rounded mb-3">
+            <input type="file" name="poster" class="w-full p-2 mb-3">
+            <textarea name="description" rows="4" class="w-full p-2 border rounded">{{ event.description }}</textarea>
+            <div class="mt-4">
+                <button class="bg-indigo-600 text-white px-4 py-2 rounded">Save</button>
+                <a href="{{ url_for('studentbody.body_dashboard', body_id=body.id) }}"
+                    class="ml-2 text-gray-600">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

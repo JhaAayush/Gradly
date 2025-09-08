@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}{{ body.name }}{% endblock %}
+{% block content %}
+<div
+    class="relative bg-gradient-to-br from-slate-900 to-pink-800 rounded-3xl shadow-2xl mb-12 text-white overflow-hidden">
+    <div class="absolute inset-0 bg-grid-slate-700/20 [mask-image:linear-gradient(to_bottom,white,transparent)]"></div>
+    <div class="flex flex-col md:flex-row items-center p-8 md:p-12 relative z-10">
+        <div class="relative flex-shrink-0">
+            <div
+                class="w-32 h-32 rounded-2xl overflow-hidden border-4 border-slate-600 shadow-lg bg-slate-700 ring-4 ring-pink-500/50 flex items-center justify-center">
+                {% if body.logo %}
+                <img src="{{ url_for('static', filename=body.logo) }}" class="w-full h-full object-contain p-2"
+                    alt="logo">
+                {% else %}
+                <i class="fa fa-users text-5xl text-pink-400"></i>
+                {% endif %}
+            </div>
+        </div>
+        <div class="mt-6 md:mt-0 md:ml-8 text-center md:text-left">
+            <h1 class="text-4xl font-extrabold">{{ body.name }}</h1>
+            <p class="text-lg text-pink-300 opacity-90 font-semibold">{{ body.body_type }}</p>
+            <p class="mt-3 max-w-prose text-slate-300">{{ body.description }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="grid lg:grid-cols-3 gap-8">
+    <div class="lg:col-span-1">
+        <div class="bg-white/70 backdrop-blur-lg p-6 rounded-2xl shadow-2xl border border-slate-200">
+            <h2 class="text-xl font-bold text-slate-800 mb-4">Members</h2>
+            <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-3 gap-4">
+                {% for i in range(12) %}
+                <div class="flex flex-col items-center text-center">
+                    <div
+                        class="w-16 h-16 rounded-full bg-slate-200 flex items-center justify-center mb-2 text-slate-400 text-2xl">
+                        <i class="fa fa-user"></i>
+                    </div>
+                    <div class="text-xs font-medium text-slate-700">Member Name</div>
+                    <div class="text-xs text-slate-500">Role</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="lg:col-span-2">
+        <div class="bg-white/70 backdrop-blur-lg p-6 rounded-2xl shadow-2xl border border-slate-200">
+            <h2 class="text-xl font-bold text-slate-800 mb-4">Upcoming Events</h2>
+            <div class="space-y-4">
+                {% for ev in body.events %}
+                <div class="bg-slate-50/80 p-4 rounded-lg flex items-center space-x-4">
+                    <div
+                        class="flex-shrink-0 bg-pink-100 text-pink-600 h-14 w-14 rounded-xl flex flex-col items-center justify-center font-bold">
+                        <span class="text-sm -mb-1">{{ ev.date.strftime('%b') }}</span>
+                        <span class="text-2xl">{{ ev.date.strftime('%d') }}</span>
+                    </div>
+                    <div class="flex-grow">
+                        <p class="font-bold text-slate-800">{{ ev.title }}</p>
+                        <p class="text-sm text-slate-500">{{ ev.description|truncate(120) }}</p>
+                    </div>
+                    {% if ev.poster %}
+                    <img src="{{ url_for('static', filename=ev.poster) }}"
+                        class="w-28 h-20 object-cover rounded-md flex-shrink-0 hidden sm:block" alt="Event Poster">
+                    {% endif %}
+                </div>
+                {% else %}
+                <p class="text-slate-500 text-center py-10">No events scheduled yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

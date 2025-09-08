@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Student Body Login{% endblock %}
+{% block content %}
+<div class="flex items-center justify-center min-h-[calc(100vh-var(--navbar-height)-var(--footer-height))]">
+    <div class="max-w-md w-full bg-white/70 backdrop-blur-lg p-8 rounded-2xl shadow-2xl border border-slate-200">
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-extrabold text-slate-800 flex items-center justify-center gap-3">
+                <i class="fa fa-users text-pink-500"></i> Student Body Login
+            </h2>
+            <p class="text-slate-500 mt-2">Sign in to manage your body’s events and profile.</p>
+        </div>
+        <form method="POST" class="space-y-6">
+            {{ form.hidden_tag() }}
+            <div>
+                {{ form.email.label(class="block text-sm font-semibold text-slate-600 mb-2") }}
+                <div class="relative">
+                    <i class="fa fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    {{ form.email(class="w-full pl-12 pr-4 py-3 bg-slate-100 border-transparent rounded-lg focus:ring-2
+                    focus:ring-pink-500 transition placeholder-slate-400", placeholder="Body Email") }}
+                </div>
+            </div>
+            <div>
+                {{ form.password.label(class="block text-sm font-semibold text-slate-600 mb-2") }}
+                <div class="relative">
+                    <i class="fa fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    {{ form.password(class="w-full pl-12 pr-4 py-3 bg-slate-100 border-transparent rounded-lg
+                    focus:ring-2 focus:ring-pink-500 transition", placeholder="Password") }}
+                </div>
+            </div>
+            <button type="submit"
+                class="w-full bg-pink-600 text-white px-6 py-3 rounded-lg font-semibold text-lg hover:bg-pink-700 transition-all duration-300 transform hover:scale-105 shadow-md">
+                Login <i class="fa fa-sign-in-alt ml-2"></i>
+            </button>
+            <p class="text-center text-sm text-slate-600 mt-4">
+                <a href="{{ url_for('auth.login') }}" class="text-sky-600 hover:underline font-medium">Back to Student
+                    Login</a>
+            </p>
+        </form>
+    </div>
+</div>
+{% endblock %}

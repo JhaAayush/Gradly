@@ -6,6 +6,7 @@ from forms import EditProfileForm, WorkExperienceForm, InternshipForm, Certifica
 from werkzeug.utils import secure_filename
 import os
 from resume_parser import parse_resume
+from models import User, StudentBody
 
 profile_bp = Blueprint('profile', __name__)
 
@@ -44,30 +45,37 @@ def edit_profile():
         current_user.show_email = profile_form.show_email.data
         current_user.show_phone = profile_form.show_phone.data
         current_user.show_cgpa = profile_form.show_cgpa.data
-
-        # ✅ Handle profile picture upload
-        if profile_form.profile_pic.data and hasattr(profile_form.profile_pic.data, "filename"):
-            file = profile_form.profile_pic.data
-            filename = secure_filename(file.filename)
-            filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-            file.save(filepath)
-            current_user.profile_pic = f'uploads/{filename}'
-
+        
         # ✅ Handle resume upload
-        if profile_form.resume.data and hasattr(profile_form.resume.data, "filename"):
+        if profile_form.resume.data and hasattr(profile_form.resume.data, "filename") and profile_form.resume.data.filename:
+            if current_user.resume:
+                old_resume_path = os.path.join(current_app.root_path, "static", current_user.resume)
+                if os.path.exists(old_resume_path):
+                    os.remove(old_resume_path)
             file = profile_form.resume.data
-            filename = secure_filename(file.filename)
+            ext = os.path.splitext(file.filename)[1]  # keep .pdf, .docx, etc.
+            filename = secure_filename(f"{current_user.id}_resume{ext}")
             filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
             file.save(filepath)
             current_user.resume = f'uploads/{filename}'
 
-        db.session.commit()
-        flash("Profile updated!", "success")
-        return redirect(url_for("profile.edit_profile"))
+        # ✅ Handle profile pic upload
+        if profile_form.profile_pic.data and hasattr(profile_form.profile_pic.data, "filename") and profile_form.profile_pic.data.filename:
+            if current_user.profile_pic:
+                old_pic_path = os.path.join(current_app.root_path, "static", current_user.profile_pic)
+                if os.path.exists(old_pic_path):
+                    os.remove(old_pic_path)
+            file = profile_form.profile_pic.data
+            ext = os.path.splitext(file.filename)[1]
+            filename = secure_filename(f"{current_user.id}_profile{ext}")
+            filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+            current_user.profile_pic = f'uploads/{filename}'
 
         db.session.commit()
         flash("Profile updated!", "success")
-        return redirect(url_for('profile.edit_profile'))
+        # --- CHANGE --- Redirect to the user's profile page
+        return redirect(url_for('profile.view_profile', user_id=current_user.id))
 
     # Add work experience
     if work_form.submit.data and work_form.validate_on_submit():
@@ -81,7 +89,8 @@ def edit_profile():
         db.session.add(work)
         db.session.commit()
         flash("Work experience added!", "success")
-        return redirect(url_for('profile.edit_profile'))
+        # --- CHANGE --- Redirect to the user's profile page
+        return redirect(url_for('profile.view_profile', user_id=current_user.id))
 
     # Add internship
     if internship_form.submit.data and internship_form.validate_on_submit():
@@ -95,7 +104,8 @@ def edit_profile():
         db.session.add(internship)
         db.session.commit()
         flash("Internship added!", "success")
-        return redirect(url_for('profile.edit_profile'))
+        # --- CHANGE --- Redirect to the user's profile page
+        return redirect(url_for('profile.view_profile', user_id=current_user.id))
 
     # Add certification
     if cert_form.submit.data and cert_form.validate_on_submit():
@@ -103,7 +113,8 @@ def edit_profile():
         db.session.add(cert)
         db.session.commit()
         flash("Certification added!", "success")
-        return redirect(url_for('profile.edit_profile'))
+        # --- CHANGE --- Redirect to the user's profile page
+        return redirect(url_for('profile.view_profile', user_id=current_user.id))
 
     # Add skill
     if skill_form.submit.data and skill_form.validate_on_submit():
@@ -111,7 +122,8 @@ def edit_profile():
         db.session.add(skill)
         db.session.commit()
         flash("Skill added!", "success")
-        return redirect(url_for('profile.edit_profile'))
+        # --- CHANGE --- Redirect to the user's profile page
+        return redirect(url_for('profile.view_profile', user_id=current_user.id))
 
     # Add hobby
     if hobby_form.submit.data and hobby_form.validate_on_submit():
@@ -119,7 +131,8 @@ def edit_profile():
         db.session.add(hobby)
         db.session.commit()
         flash("Hobby added!", "success")
-        return redirect(url_for('profile.edit_profile'))
+        # --- CHANGE --- Redirect to the user's profile page
+        return redirect(url_for('profile.view_profile', user_id=current_user.id))
 
     return render_template(
         "edit_profile.html",
@@ -132,13 +145,30 @@ def edit_profile():
     )
 
 
-@profile_bp.route('/search')
+@profile_bp.route("/search")
 @login_required
 def search_users():
-    q = request.args.get('q', '').strip()
-    if not q:
-        return jsonify([])
+    q = request.args.get("q", "").strip()
+    results = []
 
-    users = User.query.filter(User.name.ilike(f"%{q}%")).all()
-    results = [{"id": user.id, "name": user.name} for user in users]
+    if q:
+        users = User.query.filter(User.name.ilike(f"%{q}%")).all()
+        bodies = StudentBody.query.filter(StudentBody.name.ilike(f"%{q}%")).all()
+
+        for u in users:
+            results.append({
+                "id": u.id,
+                "name": u.name,
+                "type": "student",
+                "url": url_for("profile.view_profile", user_id=u.id)
+            })
+
+        for b in bodies:
+            results.append({
+                "id": b.id,
+                "name": b.name,
+                "type": "body",
+                "url": url_for("studentbody.body_profile", body_id=b.id)
+            })
+
     return jsonify(results)

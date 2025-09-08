@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}{{ body.name }} - Home{% endblock %}
+{% block content %}
+<div class="text-center py-12">
+    {% if body.logo %}
+    <img src="{{ url_for('static', filename=body.logo) }}" alt="{{ body.name }} Logo"
+        class="mx-auto h-24 w-24 object-contain rounded-2xl mb-6 shadow-lg bg-white p-2">
+    {% endif %}
+    <h1 class="text-5xl font-extrabold text-slate-800 tracking-tighter">{{ body.name }}</h1>
+    <p class="text-lg text-pink-600 font-semibold mt-2">{{ body.body_type }}</p>
+    <p class="max-w-3xl mx-auto mt-4 text-slate-600">{{ body.description }}</p>
+</div>
+
+<div class="bg-white/70 backdrop-blur-lg p-6 sm:p-8 rounded-2xl shadow-2xl border border-slate-200">
+    <h2 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-3"><i
+            class="fa fa-calendar-alt text-pink-500"></i> Upcoming Events</h2>
+    <div class="space-y-4">
+        {% for event in body.events %}
+        <div class="bg-slate-50/80 p-4 rounded-lg flex items-center space-x-4">
+            <div
+                class="flex-shrink-0 bg-pink-100 text-pink-600 h-14 w-14 rounded-xl flex flex-col items-center justify-center font-bold">
+                <span class="text-sm -mb-1">{{ event.date.strftime('%b') }}</span>
+                <span class="text-2xl">{{ event.date.strftime('%d') }}</span>
+            </div>
+            <div class="flex-grow">
+                <p class="font-bold text-slate-800">{{ event.title }}</p>
+                <p class="text-sm text-slate-500">{{ event.description|truncate(150) }}</p>
+            </div>
+            {% if event.poster %}
+            <img src="{{ url_for('static', filename=event.poster) }}"
+                class="w-28 h-20 object-cover rounded-md flex-shrink-0 hidden sm:block" alt="Event Poster">
+            {% endif %}
+        </div>
+        {% else %}
+        <p class="text-slate-500 text-center py-10">No upcoming events scheduled. Check back soon!</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

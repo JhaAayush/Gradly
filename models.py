@@ -28,6 +28,13 @@ class User(db.Model, UserMixin):
     skills = db.relationship('Skill', backref='user', lazy=True)
     hobbies = db.relationship('Hobby', backref='user', lazy=True)
 
+    def get_id(self):
+        return f"U_{self.id}"
+
+    @property
+    def user_type(self):
+        return "student"
+
 
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -43,10 +50,6 @@ class Event(db.Model):
     description = db.Column(db.Text, nullable=True)
     date = db.Column(db.DateTime, default=datetime.utcnow)
 
-class StudentBody(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(150), nullable=False)
-    description = db.Column(db.Text)
 
 # models.py
 
@@ -84,3 +87,35 @@ class Hobby(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     user_id = db.Column(db.String(15), db.ForeignKey('user.id'), nullable=False)
+
+
+# models.py (append or integrate)
+
+from datetime import datetime
+
+class StudentBody(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False)
+    email = db.Column(db.String(200), unique=True, nullable=False)
+    body_type = db.Column(db.String(100), nullable=True)
+    description = db.Column(db.Text, nullable=True)
+    password = db.Column(db.String(200), nullable=False)
+    logo = db.Column(db.String(200), nullable=True)
+
+    def get_id(self):
+        return f"B_{self.id}"  # unique prefix so it doesn’t collide with student IDs
+    
+    @property
+    def user_type(self):
+        return "body"
+
+
+class BodyEvent(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(250), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    poster = db.Column(db.String(200), nullable=True)  # path in static/uploads/
+    date = db.Column(db.DateTime, default=datetime.utcnow)
+    body_id = db.Column(db.Integer, db.ForeignKey('student_body.id'), nullable=False)
+
+    body = db.relationship('StudentBody', backref=db.backref('events', lazy=True))
