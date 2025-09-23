@@ -31,39 +31,41 @@
 <!-- Feature Cards Section -->
 <section class="grid md:grid-cols-3 gap-8 mt-16">
     <!-- Student Profiles -->
-    <a href="{{ url_for('profile.view_profile', user_id=current_user.id) }}"
-        class="group block bg-white/70 backdrop-blur-lg p-8 rounded-2xl shadow-lg border border-slate-200 hover:border-sky-400 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
-        <i class="fa fa-users text-3xl text-sky-500 mb-4"></i>
-        <h3 class="text-xl font-bold mb-2 text-slate-800">Student Profiles</h3>
-        <p class="text-slate-600">Manage your resume, CGPA, and contact details in one professional space.</p>
-        <span
-            class="absolute bottom-6 right-6 text-slate-300 group-hover:text-sky-500 transition-colors transform group-hover:translate-x-1 duration-300">
-            <i class="fa fa-arrow-right"></i>
-        </span>
-    </a>
+<!-- Student Profiles -->
+<a href="{% if current_user.is_authenticated %}{{ url_for('profile.view_profile', user_id=current_user.id) }}{% else %}{{ url_for('auth.login') }}{% endif %}"
+    class="group block bg-white/70 backdrop-blur-lg p-8 rounded-2xl shadow-lg border border-slate-200 hover:border-sky-400 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+    <i class="fa fa-users text-3xl text-sky-500 mb-4"></i>
+    <h3 class="text-xl font-bold mb-2 text-slate-800">Student Profiles</h3>
+    <p class="text-slate-600">Manage your resume, CGPA, and contact details in one professional space.</p>
+    <span
+        class="absolute bottom-6 right-6 text-slate-300 group-hover:text-sky-500 transition-colors transform group-hover:translate-x-1 duration-300">
+        <i class="fa fa-arrow-right"></i>
+    </span>
+</a>
 
-    <!-- To-Do Tracker -->
-    <a href="{{ url_for('dashboard.dashboard') }}"
-        class="group block bg-white/70 backdrop-blur-lg p-8 rounded-2xl shadow-lg border border-slate-200 hover:border-sky-400 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
-        <i class="fa fa-check-double text-3xl text-sky-500 mb-4"></i>
-        <h3 class="text-xl font-bold mb-2 text-slate-800">To-Do Tracker</h3>
-        <p class="text-slate-600">Stay on top of assignments, deadlines, and crucial career prep tasks.</p>
-        <span
-            class="absolute bottom-6 right-6 text-slate-300 group-hover:text-sky-500 transition-colors transform group-hover:translate-x-1 duration-300">
-            <i class="fa fa-arrow-right"></i>
-        </span>
-    </a>
+<!-- To-Do Tracker -->
+<a href="{% if current_user.is_authenticated %}{{ url_for('dashboard.dashboard') }}{% else %}{{ url_for('auth.login') }}{% endif %}"
+    class="group block bg-white/70 backdrop-blur-lg p-8 rounded-2xl shadow-lg border border-slate-200 hover:border-sky-400 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+    <i class="fa fa-check-double text-3xl text-sky-500 mb-4"></i>
+    <h3 class="text-xl font-bold mb-2 text-slate-800">To-Do Tracker</h3>
+    <p class="text-slate-600">Stay on top of assignments, deadlines, and crucial career prep tasks.</p>
+    <span
+        class="absolute bottom-6 right-6 text-slate-300 group-hover:text-sky-500 transition-colors transform group-hover:translate-x-1 duration-300">
+        <i class="fa fa-arrow-right"></i>
+    </span>
+</a>
 
-    <!-- Events & Committees -->
-    <a href="{{ url_for('events.add_event') }}"
-        class="group block bg-white/70 backdrop-blur-lg p-8 rounded-2xl shadow-lg border border-slate-200 hover:border-sky-400 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
-        <i class="fa fa-calendar-days text-3xl text-sky-500 mb-4"></i>
-        <h3 class="text-xl font-bold mb-2 text-slate-800">Events & Committees</h3>
-        <p class="text-slate-600">Know what's happening around campus and never miss an important event.</p>
-        <span
-            class="absolute bottom-6 right-6 text-slate-300 group-hover:text-sky-500 transition-colors transform group-hover:translate-x-1 duration-300">
-            <i class="fa fa-arrow-right"></i>
-        </span>
-    </a>
+<!-- Events & Committees -->
+<a href="{% if current_user.is_authenticated %}{{ url_for('events.view_events') }}{% else %}{{ url_for('auth.login') }}{% endif %}"
+    class="group block bg-white/70 backdrop-blur-lg p-8 rounded-2xl shadow-lg border border-slate-200 hover:border-sky-400 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+    <i class="fa fa-calendar-days text-3xl text-sky-500 mb-4"></i>
+    <h3 class="text-xl font-bold mb-2 text-slate-800">Events & Committees</h3>
+    <p class="text-slate-600">Know what's happening around campus and never miss an important event.</p>
+    <span
+        class="absolute bottom-6 right-6 text-slate-300 group-hover:text-sky-500 transition-colors transform group-hover:translate-x-1 duration-300">
+        <i class="fa fa-arrow-right"></i>
+    </span>
+</a>
+
 </section>
 {% endblock %}

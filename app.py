@@ -11,6 +11,7 @@ from werkzeug.utils import secure_filename
 from routes.profile import profile_bp
 from routes.studentbody import studentbody_bp
 from routes.studentbody_auth import studentbody_auth_bp
+from routes.resources import resources_bp
 
 app = Flask(__name__)
 
@@ -55,15 +56,29 @@ app.register_blueprint(events_bp)
 app.register_blueprint(profile_bp)
 app.register_blueprint(studentbody_bp)
 app.register_blueprint(studentbody_auth_bp)
+app.register_blueprint(resources_bp)
 
 # Home route stays here
+from flask_login import current_user
+from models import Task, StudentBody, User
+
 @app.route('/')
 def home():
-    closest_task = None
     if current_user.is_authenticated:
-        closest_task = Task.query.filter_by(user_id=current_user.id).order_by(Task.due_date).first()
-        print(current_user)
-    return render_template('home.html', closest_task=closest_task)
+        # If the logged in user is a Student (User model)
+        if isinstance(current_user, User):
+            closest_task = Task.query.filter_by(
+                user_id=current_user.id
+            ).order_by(Task.due_date).first()
+            return render_template('home.html', closest_task=closest_task)
+
+        # If the logged in user is a Student Body
+        elif isinstance(current_user, StudentBody):
+            return render_template('body_home.html', body=current_user)
+
+    # If not logged in at all, default to student home (or make a neutral landing page if you prefer)
+    return render_template('home.html', closest_task=None)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

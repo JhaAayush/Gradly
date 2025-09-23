@@ -23,8 +23,10 @@
                 {{ form.password.label(class="block text-sm font-semibold text-slate-600 mb-2") }}
                 <div class="relative">
                     <i class="fa fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                    {{ form.password(class="w-full pl-12 pr-4 py-3 bg-slate-100 border-transparent rounded-lg
+                    {{ form.password(id="password",class="w-full pl-12 pr-4 py-3 bg-slate-100 border-transparent rounded-lg
                     focus:ring-2 focus:ring-pink-500 transition", placeholder="Password") }}
+                    <i id="togglePassword" class="fa fa-eye absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 cursor-pointer"></i>
+
                 </div>
             </div>
             <button type="submit"
@@ -38,4 +40,19 @@
         </form>
     </div>
 </div>
+<script>
+    const togglePassword = document.querySelector('#togglePassword');
+    const password = document.querySelector('#password');
+
+    togglePassword.addEventListener('click', function () {
+        // Toggle the type attribute
+        const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+        password.setAttribute('type', type);
+
+        // Toggle the icon class
+        this.classList.toggle('fa-eye');
+        this.classList.toggle('fa-eye-slash');
+    });
+</script>
+
 {% endblock %}

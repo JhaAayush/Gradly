@@ -16,3 +16,10 @@ def add_event():
         flash('Event added!', 'success')
         return redirect(url_for('dashboard.dashboard'))
     return render_template('add_event.html', form=form)
+
+
+@events_bp.route('/events')
+@login_required
+def view_events():
+    events = BodyEvent.query.order_by(BodyEvent.date.asc()).all()
+    return render_template('view_events.html', events=events)
