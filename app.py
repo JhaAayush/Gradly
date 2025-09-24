@@ -12,6 +12,7 @@ from routes.profile import profile_bp
 from routes.studentbody import studentbody_bp
 from routes.studentbody_auth import studentbody_auth_bp
 from routes.resources import resources_bp
+from routes.posts import posts_bp
 
 app = Flask(__name__)
 
@@ -57,6 +58,7 @@ app.register_blueprint(profile_bp)
 app.register_blueprint(studentbody_bp)
 app.register_blueprint(studentbody_auth_bp)
 app.register_blueprint(resources_bp)
+app.register_blueprint(posts_bp)
 
 # Home route stays here
 from flask_login import current_user

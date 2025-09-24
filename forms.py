@@ -1,9 +1,10 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, FileField, FloatField
-from wtforms.validators import DataRequired, Email, Length
+from wtforms.validators import DataRequired, Email, Length, Optional
 from wtforms.fields import DateField
 from wtforms import BooleanField, TelField
 from flask_wtf.file import FileField, FileAllowed
+from wtforms import TextAreaField
 
 class RegisterForm(FlaskForm):
     roll_number = StringField('Roll Number', validators=[DataRequired(), Length(min=5, max=20)])
@@ -17,25 +18,15 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login')
 
-
 class TaskForm(FlaskForm):
     title = StringField('Task Title', validators=[DataRequired()])
     due_date = DateField('Deadline', format='%Y-%m-%d', validators=[DataRequired()])
     submit = SubmitField('Add Task')
 
-
 class EventForm(FlaskForm):
     title = StringField('Event Title', validators=[DataRequired()])
     description = StringField('Description')
     submit = SubmitField('Add Event')
-
-# forms.py
-
-
-# forms.py
-from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, FileField, BooleanField, FloatField
-from wtforms.validators import DataRequired, Email, Optional
 
 class EditProfileForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
@@ -51,9 +42,7 @@ class EditProfileForm(FlaskForm):
 
     submit = SubmitField("Save Changes")
 
-# forms.py
-from wtforms import DateField
-
+# Updated forms to handle multiple entries - these will be used for validation only
 class WorkExperienceForm(FlaskForm):
     organization = StringField("Organization", validators=[DataRequired()])
     role = StringField("Role", validators=[Optional()])
@@ -80,23 +69,20 @@ class HobbyForm(FlaskForm):
     name = StringField("Hobby", validators=[DataRequired()])
     submit = SubmitField("Add Hobby")
 
-from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, FileField, SubmitField
-from wtforms.validators import DataRequired, Length
-
 class BodyEventForm(FlaskForm):
     title = StringField("Title", validators=[DataRequired(), Length(max=250)])
     description = TextAreaField("Description", validators=[Length(max=1000)])
     poster = FileField("Poster")  # optional, allow uploads
-    date = DateField("Event Date", format="%Y-%m-%d", validators=[DataRequired()])   # ✅ new
+    date = DateField("Event Date", format="%Y-%m-%d", validators=[DataRequired()])
     submit = SubmitField("Save Event")
-
-from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, Email
-from flask_wtf import FlaskForm
-
 
 class BodyLoginForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired(), Email()])
     password = PasswordField("Password", validators=[DataRequired()])
     submit = SubmitField("Login")
+
+class BodyPostForm(FlaskForm):
+    title = StringField("Post Title", validators=[DataRequired(), Length(max=200)])
+    content = TextAreaField("Content", validators=[DataRequired(), Length(max=5000)])
+    image = FileField("Image", validators=[FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Images only!')])
+    submit = SubmitField("Publish Post")

@@ -4,13 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>{% block title %}Gradly Portal{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -69,6 +71,10 @@
                 <a href="{{ url_for('studentbody.body_dashboard', body_id=current_user.id) }}"
                     class="text-slate-600 hover:text-pink-500 font-medium transition-colors">Dashboard</a>
                 {% endif %}
+
+                <!-- Feed -->
+                <a href="{{ url_for('posts.feed') }}"
+                    class="text-slate-600 hover:text-emerald-500 font-medium transition-colors">Feed</a>
 
                 <!-- Resources -->
                 <a href="{{ url_for('resources.resources') }}"

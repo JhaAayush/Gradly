@@ -1,24 +1,179 @@
 {% extends "base.html" %}
-{% block title %}Resources{% endblock %}
-{% block content %}
-<div class="max-w-6xl mx-auto py-12">
-    <h1 class="text-4xl font-extrabold text-slate-800 text-center mb-12">Resources</h1>
+{% block title %}Library Resources{% endblock %}
 
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {% for res in resources %}
-        <div
-            class="bg-white/70 backdrop-blur-lg rounded-2xl shadow-lg border border-slate-200 overflow-hidden hover:shadow-2xl transition-all duration-300">
-            <div class="p-6">
-                <h2 class="text-xl font-bold text-slate-800 mb-2">{{ res.title }}</h2>
-                <p class="text-slate-600 mb-4">{{ res.description }}</p>
-                <a href="{{ res.file }}"
-                    class="inline-block bg-sky-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-sky-700 transition">View
-                    / Download</a>
+{% block content %}
+<div class="max-w-7xl mx-auto py-10">
+    <div class="text-center mb-12">
+        <i class="fa fa-book-atlas text-5xl text-sky-500 mb-4"></i>
+        <h1 class="text-5xl font-extrabold text-slate-800 tracking-tighter">Library Resources</h1>
+        <p class="max-w-2xl mx-auto mt-3 text-lg text-slate-500">
+            Access our comprehensive collection of academic databases, journals, books, and news sources.
+        </p>
+    </div>
+
+    {% macro section(id, title, icon_class, resources) %}
+    <div class="mb-6 bg-white/50 backdrop-blur-lg rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
+        <button class="w-full flex justify-between items-center p-5 text-left transition duration-300 ease-in-out group"
+            onclick="toggleSection('{{ id }}')">
+            <div class="flex items-center gap-4">
+                <div
+                    class="w-12 h-12 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center flex-shrink-0">
+                    <i class="fa {{ icon_class }} text-xl"></i>
+                </div>
+                <span class="text-2xl font-bold text-slate-800">{{ title }}</span>
+            </div>
+            <svg id="{{ id }}-icon" class="w-6 h-6 text-slate-500 transition-transform duration-300 flex-shrink-0"
+                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+        </button>
+        <div id="{{ id }}" class="hidden p-5 border-t border-slate-200 bg-slate-50/50">
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                {% for r in resources %}
+                <a href="{{ r.link }}" target="_blank"
+                    class="group block bg-white/80 rounded-xl p-4 border border-slate-200 shadow-md hover:shadow-2xl hover:border-sky-400 transition-all duration-300 transform hover:-translate-y-1">
+                    <h3 class="text-lg font-bold text-slate-800 group-hover:text-sky-600 transition-colors">
+                        {{ r.name }}
+                        <i
+                            class="fa fa-external-link-alt text-xs text-slate-400 ml-1 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                    </h3>
+                    <p class="text-sm text-slate-600 mt-2">{{ r.desc }}</p>
+                </a>
+                {% endfor %}
             </div>
         </div>
-        {% else %}
-        <p class="text-slate-500 text-center col-span-full">No resources available yet. Please check back later.</p>
-        {% endfor %}
     </div>
+    {% endmacro %}
+
+    {{ section("ebooks", "Books", "fa-book-open", [
+    {"name": "ABI Inform Complete", "link": "https://search.proquest.com/abicomplete?accountid=178369", "desc":
+    "Comprehensive database with journals, dissertations, reports, and global business trends."},
+    {"name": "Ebrary Academic Complete", "link": "https://ebookcentral.proquest.com/lib/iimamritsar", "desc": "150,000+
+    academic eBooks across business, economics, engineering, and sciences."},
+    {"name": "Oxford Handbooks Online", "link": "https://www.oxfordhandbooks.com/", "desc": "136 titles of Oxford
+    Handbook series in Business, Management, and Finance."},
+    {"name": "Springer Nature eBooks", "link": "https://link.springer.com", "desc": "E-books in Business, Management,
+    Economics, and Finance."},
+    {"name": "Taylor & Francis eBooks", "link": "https://www.taylorfrancis.com", "desc": "421 ebooks in Business,
+    Finance, HRM, Marketing, Operations, Strategy, and more."}
+    ]) }}
+
+    {{ section("edatabases", "Databases", "fa-database", [
+    {"name": "Bloomberg", "link": "#", "desc": "Data on millions of bonds, equities, commodities, and company profiles
+    (library-only access)."},
+    {"name": "Capitaline AWS", "link": "https://awsone.capitaline.com/externalaccess.html", "desc": "Financial and
+    market data on 55,000+ Indian companies with analytic tools."},
+    {"name": "CMIE Industry Outlook", "link": "https://industryoutlook.cmie.com", "desc": "Comprehensive data on 193
+    Indian industries with historical and financial performance."},
+    {"name": "CMIE Prowess", "link": "https://prowess.cmie.com/", "desc": "Most comprehensive database on Indian company
+    financial performance since 1989."},
+    {"name": "CMIE Prowess dx", "link": "https://prowessdx.cmie.com", "desc": "Web-based database with financial data
+    for 35,000+ Indian companies."},
+    {"name": "CMIE States of India", "link": "https://statesofindia.cmie.com/", "desc": "Statistical compendium of
+    states and districts covering economic and socio-economic indicators."},
+    {"name": "Corporate Social Responsibility", "link": "https://www.primeinfobase.com/myaccount.aspx?lg=n", "desc":
+    "CSR data of Indian listed companies, including expenditure and board details."},
+    {"name": "CRISIL Research", "link": "http://www.crisilresearch.com", "desc": "Detailed analysis of trends and
+    outlook on 70 Indian industries."},
+    {"name": "District Metrics", "link": "https://districtmetrics.com", "desc": "Market demographics and purchasing
+    power analysis at district and town level."},
+    {"name": "EBSCO Business Source Ultimate", "link": "https://research.ebsco.com/c/jgym2g/search", "desc": "Leading
+    business research database with journals, reports, and archives."},
+    {"name": "EMIS Next", "link": "https://cas.emis.com/login", "desc": "Financial, company, industry, and macroeconomic
+    intelligence for emerging markets."},
+    {"name": "Euromonitor Passport", "link": "http://www.portal.euromonitor.com/portal", "desc": "Market research,
+    economic statistics, and consumer lifestyle analysis worldwide."},
+    {"name": "Indian Boards Database", "link": "https://www.primeinfobase.com/myaccount.aspx?lg=n", "desc": "Detailed
+    info on boards of 1467 NSE companies and unlisted financial firms."},
+    {"name": "JSTOR", "link": "http://www.jstor.org", "desc": "Access to 12 million+ academic articles, books, and
+    primary sources."},
+    {"name": "LexisNexis Academic", "link": "http://www.nexisuni.com", "desc": "Legal and business news, directories,
+    company dossiers, and court data."},
+    {"name": "LSEG (Eikon Workspace)", "link": "http://workspace.refinitiv.com/web", "desc": "Global data on financial
+    instruments, bonds, forex, commodities, and companies."},
+    {"name": "ProQuest Dissertations & Theses", "link": "http://search.proquest.com/178369", "desc": "World’s most
+    comprehensive dissertation and thesis collection."},
+    {"name": "Qualtrics", "link": "https://iimamritsar.qualtrics.com", "desc": "Powerful survey design and analytics
+    tool."},
+    {"name": "Scopus", "link": "http://www.scopus.com", "desc": "Largest abstract and citation database of peer-reviewed
+    literature."},
+    {"name": "Shareholders", "link": "https://www.primeinfobase.com/myaccount.aspx?lg=n", "desc": "Comprehensive data on
+    ownership of companies and promoters."},
+    {"name": "Statista", "link": "https://www.statista.com/", "desc": "Market research portal with over 1M statistics
+    from 22,500 sources."},
+    {"name": "WARC", "link": "https://www.warc.com/", "desc": "Case studies and reports on marketing, advertising, and
+    consumer insights."},
+    {"name": "YNOS Venture Engine", "link": "https://www.ynos.in/launch.html#!/login", "desc": "Business intelligence
+    and fundraising analytics for early-stage entrepreneurs."}
+    ]) }}
+
+    {{ section("ejournals", "Journals", "fa-file-alt", [
+    {"name": "Cambridge University Press", "link": "https://www.cambridge.org/core/", "desc": "44 journal titles in
+    business ethics, economics, law, management, and history."},
+    {"name": "Elsevier (Science Direct)", "link": "https://www.sciencedirect.com/", "desc": "Journals in business,
+    economics, finance, decision sciences, and CS."},
+    {"name": "Emerald", "link": "http://www.emeraldinsight.com/", "desc": "310 titles covering management, HR, finance,
+    operations, marketing, and more."},
+    {"name": "Informs Pubs Suite", "link": "https://pubsonline.informs.org/", "desc": "Journals in operations research,
+    management science, marketing science, and computing."},
+    {"name": "Nature", "link": "https://www.nature.com/", "desc": "Weekly science journal with access since 2017."},
+    {"name": "Palgrave e-Journals", "link": "https://link.springer.com/", "desc": "45 Palgrave journals (ESS
+    package)."},
+    {"name": "PsycArticles", "link": "https://www.proquest.com/psycarticles", "desc": "116 behavioral science and
+    psychology journals."},
+    {"name": "Sage Journals", "link": "http://journals.sagepub.com", "desc": "739+ journals in humanities, social
+    sciences, and business since 1999."},
+    {"name": "Springer Journals", "link": "https://link.springer.com/", "desc": "1700+ journals with perpetual access
+    since 1997."},
+    {"name": "Taylor & Francis e-Journals", "link": "https://www.tandfonline.com/", "desc": "403 peer-reviewed journals
+    in economics, business, and social sciences."},
+    {"name": "Wiley", "link": "https://www.wileyindia.com/iimamritsar/", "desc": "535 journals in humanities, social
+    sciences, and business."}
+    ]) }}
+
+    {{ section("enews", "News & Magazines", "fa-newspaper", [
+    {"name": "Business Standard", "link": "https://www.business-standard.com/", "desc": "Business and market news since
+    1997."},
+    {"name": "ET Prime", "link": "https://prime.economictimes.indiatimes.com/", "desc": "Business storytelling platform
+    covering tech, pharma, auto, and finance."},
+    {"name": "Financial Times", "link": "https://www.ft.com/", "desc": "Global news, data, and analysis on business and
+    finance."},
+    {"name": "Financial Times Historical Archive", "link": "https://link.gale.com/apps/menu?u=iimamritsar", "desc":
+    "Complete searchable archive of FT (1888-2021)."},
+    {"name": "Hindustan Times", "link": "https://partner.hindustantimes.com/ip?newspaper=ht-premium", "desc": "Daily top
+    stories in politics, business, and tech."},
+    {"name": "Mint", "link": "https://partner.hindustantimes.com/ip?newspaper=lm-premium", "desc": "Business news,
+    markets, and events with multimedia features."},
+    {"name": "PressReader", "link": "https://www.pressreader.com", "desc": "7,000+ newspapers and magazines from 100
+    countries in 60 languages."},
+    {"name": "The Economist", "link": "https://www.economist.com", "desc": "Authoritative insight and opinion on world
+    affairs, business, and tech."},
+    {"name": "The Ken", "link":
+    "https://the-ken.com/?subscription=corporate&company=iimamritsar.ac.in&domain_group=GR-140666", "desc": "Longform
+    business journalism on startups, tech, and healthcare."},
+    {"name": "The Morning Context", "link": "https://www.themorningcontext.com", "desc": "Independent stories on
+    internet, business, and chaos in India."},
+    {"name": "The New York Times", "link": "https://www.nytimes.com", "desc": "Global breaking news and archives since
+    1851."},
+    {"name": "The Wall Street Journal", "link": "https://www.wsj.com/india", "desc": "Breaking business news and
+    in-depth reporting from the US and world."}
+    ]) }}
 </div>
+
+<script>
+    function toggleSection(id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById(id + "-icon");
+
+        if (section.classList.contains('hidden')) {
+            // GSAP or Velocity would be great here for smooth animations,
+            // but for a no-dependency solution, we'll use CSS transitions.
+            section.classList.remove('hidden');
+            icon.classList.add('rotate-180');
+        } else {
+            section.classList.add('hidden');
+            icon.classList.remove('rotate-180');
+        }
+    }
+</script>
 {% endblock %}

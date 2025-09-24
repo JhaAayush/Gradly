@@ -73,108 +73,228 @@
     </div>
 
     <!-- Tabbed Section for Other Forms -->
-    <div x-data="{ tab: 'work' }"
+    <div x-data="{ tab: 'work', workEntries: [{}], internEntries: [{}], certEntries: [{}], skillEntries: [{}], hobbyEntries: [{}] }"
         class="bg-white/70 backdrop-blur-lg p-8 rounded-2xl shadow-2xl border border-slate-200">
         <div class="mb-6 border-b border-slate-200">
             <nav class="-mb-px flex space-x-6">
                 <button @click="tab = 'work'"
                     :class="{'border-sky-500 text-sky-600': tab === 'work', 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300': tab !== 'work'}"
-                    class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">Work
-                    Experience</button>
+                    class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors flex items-center gap-2">
+                    <i class="fa fa-briefcase"></i> Work Experience</button>
                 <button @click="tab = 'intern'"
                     :class="{'border-sky-500 text-sky-600': tab === 'intern', 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300': tab !== 'intern'}"
-                    class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">Internships</button>
+                    class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors flex items-center gap-2">
+                    <i class="fa fa-user-graduate"></i> Internships</button>
                 <button @click="tab = 'certs'"
                     :class="{'border-sky-500 text-sky-600': tab === 'certs', 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300': tab !== 'certs'}"
-                    class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">Certifications</button>
+                    class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors flex items-center gap-2">
+                    <i class="fa fa-award"></i> Certifications</button>
                 <button @click="tab = 'skills'"
                     :class="{'border-sky-500 text-sky-600': tab === 'skills', 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300': tab !== 'skills'}"
-                    class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">Skills</button>
+                    class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors flex items-center gap-2">
+                    <i class="fa fa-star"></i> Skills</button>
                 <button @click="tab = 'hobbies'"
                     :class="{'border-sky-500 text-sky-600': tab === 'hobbies', 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300': tab !== 'hobbies'}"
-                    class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">Hobbies</button>
+                    class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors flex items-center gap-2">
+                    <i class="fa fa-heart"></i> Hobbies</button>
             </nav>
         </div>
 
         <!-- Work Experience Form -->
         <div x-show="tab === 'work'">
-            <h3 class="text-xl font-bold text-slate-700 mb-4">Add Work Experience</h3>
-            <form method="POST" class="space-y-4">
+            <div class="flex items-center justify-between mb-4">
+                <button @click="workEntries.push({})" type="button"
+                    class="flex text-sm font-semibold text-sky-600 hover:text-sky-700">
+                    <i class="fa fa-plus"></i> Add Another
+                </button>
+            </div>
+            <form method="POST" class="space-y-6">
                 {{ work_form.hidden_tag() }}
-                <div class="grid md:grid-cols-2 gap-4">
-                    <div>{{ work_form.organization.label(class="text-sm font-semibold") }} {{
-                        work_form.organization(class="w-full mt-1 p-2 bg-slate-100 rounded-lg") }}</div>
-                    <div>{{ work_form.role.label(class="text-sm font-semibold") }} {{ work_form.role(class="w-full mt-1
-                        p-2 bg-slate-100 rounded-lg") }}</div>
-                    <div>{{ work_form.start_date.label(class="text-sm font-semibold") }} {{
-                        work_form.start_date(class="w-full mt-1 p-2 bg-slate-100 rounded-lg", type="date") }}</div>
-                    <div>{{ work_form.end_date.label(class="text-sm font-semibold") }} {{
-                        work_form.end_date(class="w-full mt-1 p-2 bg-slate-100 rounded-lg", type="date") }}</div>
-                </div>
-                {{ work_form.submit(value="Add Experience", class="bg-sky-500 text-white px-4 py-2 rounded-lg
-                font-semibold hover:bg-sky-600 transition cursor-pointer") }}
+                <template x-for="(entry, index) in workEntries" :key="index">
+                    <div class="bg-slate-50 p-4 rounded-lg relative">
+                        <button x-show="workEntries.length > 1" @click="workEntries.splice(index, 1)" type="button"
+                            class="absolute top-2 right-2 text-red-500 hover:text-red-700 transition">
+                            <i class="fa fa-times"></i>
+                        </button>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-sm font-semibold text-slate-600 block mb-1">Organization</label>
+                                <input type="text" :name="'work_organization_' + index"
+                                    class="w-full p-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent transition">
+                            </div>
+                            <div>
+                                <label class="text-sm font-semibold text-slate-600 block mb-1">Role</label>
+                                <input type="text" :name="'work_role_' + index"
+                                    class="w-full p-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent transition">
+                            </div>
+                            <div>
+                                <label class="text-sm font-semibold text-slate-600 block mb-1">Start Date</label>
+                                <input type="date" :name="'work_start_date_' + index"
+                                    class="w-full p-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent transition">
+                            </div>
+                            <div>
+                                <label class="text-sm font-semibold text-slate-600 block mb-1">End Date</label>
+                                <input type="date" :name="'work_end_date_' + index"
+                                    class="w-full p-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent transition">
+                            </div>
+                        </div>
+                    </div>
+                </template>
+                <input type="hidden" name="work_entries_count" :value="workEntries.length">
+                <button type="submit" name="submit_work" value="Add Work Experience"
+                    class="bg-sky-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-sky-600 transition cursor-pointer">
+                    Save All Work Experience
+                </button>
             </form>
         </div>
 
         <!-- Internship Form -->
         <div x-show="tab === 'intern'" style="display: none;">
-            <h3 class="text-xl font-bold text-slate-700 mb-4">Add Internship</h3>
-            <form method="POST" class="space-y-4">
+            <div class="flex items-center justify-between mb-4">
+                <button @click="internEntries.push({})" type="button"
+                    class="flex text-sm font-semibold text-sky-600 hover:text-sky-700">
+                    <i class="fa fa-plus"></i> Add Another
+                </button>
+            </div>
+            <form method="POST" class="space-y-6">
                 {{ internship_form.hidden_tag() }}
-                <div class="grid md:grid-cols-2 gap-4">
-                    <div>{{ internship_form.organization.label(class="text-sm font-semibold") }} {{
-                        internship_form.organization(class="w-full mt-1 p-2 bg-slate-100 rounded-lg") }}</div>
-                    <div>{{ internship_form.role.label(class="text-sm font-semibold") }} {{
-                        internship_form.role(class="w-full mt-1 p-2 bg-slate-100 rounded-lg") }}</div>
-                    <div>{{ internship_form.start_date.label(class="text-sm font-semibold") }} {{
-                        internship_form.start_date(class="w-full mt-1 p-2 bg-slate-100 rounded-lg", type="date") }}
+                <template x-for="(entry, index) in internEntries" :key="index">
+                    <div class="bg-slate-50 p-4 rounded-lg relative">
+                        <button x-show="internEntries.length > 1" @click="internEntries.splice(index, 1)" type="button"
+                            class="absolute top-2 right-2 text-red-500 hover:text-red-700 transition">
+                            <i class="fa fa-times"></i>
+                        </button>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-sm font-semibold text-slate-600 block mb-1">Organization</label>
+                                <input type="text" :name="'intern_organization_' + index"
+                                    class="w-full p-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent transition">
+                            </div>
+                            <div>
+                                <label class="text-sm font-semibold text-slate-600 block mb-1">Role</label>
+                                <input type="text" :name="'intern_role_' + index"
+                                    class="w-full p-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent transition">
+                            </div>
+                            <div>
+                                <label class="text-sm font-semibold text-slate-600 block mb-1">Start Date</label>
+                                <input type="date" :name="'intern_start_date_' + index"
+                                    class="w-full p-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent transition">
+                            </div>
+                            <div>
+                                <label class="text-sm font-semibold text-slate-600 block mb-1">End Date</label>
+                                <input type="date" :name="'intern_end_date_' + index"
+                                    class="w-full p-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent transition">
+                            </div>
+                        </div>
                     </div>
-                    <div>{{ internship_form.end_date.label(class="text-sm font-semibold") }} {{
-                        internship_form.end_date(class="w-full mt-1 p-2 bg-slate-100 rounded-lg", type="date") }}</div>
-                </div>
-                {{ internship_form.submit(value="Add Internship", class="bg-sky-500 text-white px-4 py-2 rounded-lg
-                font-semibold hover:bg-sky-600 transition cursor-pointer") }}
+                </template>
+                <input type="hidden" name="intern_entries_count" :value="internEntries.length">
+                <button type="submit" name="submit_intern" value="Add Internships"
+                    class="bg-sky-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-sky-600 transition cursor-pointer">
+                    Save All Internships
+                </button>
             </form>
         </div>
 
         <!-- Certification Form -->
         <div x-show="tab === 'certs'" style="display: none;">
-            <h3 class="text-xl font-bold text-slate-700 mb-4">Add Certification</h3>
-            <form method="POST">
+            <div class="flex items-center justify-between mb-4">
+                <button @click="certEntries.push({})" type="button"
+                    class="flex text-sm font-semibold text-sky-600 hover:text-sky-700">
+                    <i class="fa fa-plus"></i> Add Another
+                </button>
+            </div>
+            <form method="POST" class="space-y-4">
                 {{ cert_form.hidden_tag() }}
-                {{ cert_form.title.label(class="text-sm font-semibold") }}
-                {{ cert_form.title(class="w-full mt-1 p-2 bg-slate-100 rounded-lg") }}
-                {{ cert_form.submit(value="Add Certification", class="mt-4 bg-sky-500 text-white px-4 py-2 rounded-lg
-                font-semibold hover:bg-sky-600 transition cursor-pointer") }}
+                <template x-for="(entry, index) in certEntries" :key="index">
+                    <div class="bg-slate-50 p-4 rounded-lg relative">
+                        <button x-show="certEntries.length > 1" @click="certEntries.splice(index, 1)" type="button"
+                            class="absolute top-2 right-2 text-red-500 hover:text-red-700 transition">
+                            <i class="fa fa-times"></i>
+                        </button>
+                        <div>
+                            <label class="text-sm font-semibold text-slate-600 block mb-1">Certification Title</label>
+                            <input type="text" :name="'cert_title_' + index"
+                                class="w-full p-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent transition">
+                        </div>
+                    </div>
+                </template>
+                <input type="hidden" name="cert_entries_count" :value="certEntries.length">
+                <button type="submit" name="submit_cert" value="Add Certifications"
+                    class="bg-sky-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-sky-600 transition cursor-pointer">
+                    Save All Certifications
+                </button>
             </form>
         </div>
 
         <!-- Skill Form -->
         <div x-show="tab === 'skills'" style="display: none;">
-            <h3 class="text-xl font-bold text-slate-700 mb-4">Add a Skill</h3>
-            <form method="POST">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold text-slate-700">Add Skills</h3>
+                <button @click="skillEntries.push({})" type="button"
+                    class="flex text-sm font-semibold text-sky-600 hover:text-sky-700">
+                    <i class="fa fa-plus"></i> Add Another
+                </button>
+            </div>
+            <form method="POST" class="space-y-4">
                 {{ skill_form.hidden_tag() }}
-                {{ skill_form.name.label(class="text-sm font-semibold") }}
-                {{ skill_form.name(class="w-full mt-1 p-2 bg-slate-100 rounded-lg") }}
-                {{ skill_form.submit(value="Add Skill", class="mt-4 bg-sky-500 text-white px-4 py-2 rounded-lg
-                font-semibold hover:bg-sky-600 transition cursor-pointer") }}
+                <template x-for="(entry, index) in skillEntries" :key="index">
+                    <div class="bg-slate-50 p-4 rounded-lg relative">
+                        <button x-show="skillEntries.length > 1" @click="skillEntries.splice(index, 1)" type="button"
+                            class="absolute top-2 right-2 text-red-500 hover:text-red-700 transition">
+                            <i class="fa fa-times"></i>
+                        </button>
+                        <div>
+                            <label class="text-sm font-semibold text-slate-600 block mb-1">Skill Name</label>
+                            <input type="text" :name="'skill_name_' + index"
+                                class="w-full p-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent transition">
+                        </div>
+                    </div>
+                </template>
+                <input type="hidden" name="skill_entries_count" :value="skillEntries.length">
+                <button type="submit" name="submit_skill" value="Add Skills"
+                    class="bg-sky-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-sky-600 transition cursor-pointer">
+                    Save All Skills
+                </button>
             </form>
         </div>
 
         <!-- Hobby Form -->
         <div x-show="tab === 'hobbies'" style="display: none;">
-            <h3 class="text-xl font-bold text-slate-700 mb-4">Add a Hobby</h3>
-            <form method="POST">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold text-slate-700">Add Hobbies</h3>
+                <button @click="hobbyEntries.push({})" type="button"
+                    class="flex text-sm font-semibold text-sky-600 hover:text-sky-700">
+                    <i class="fa fa-plus"></i> Add Another
+                </button>
+            </div>
+            <form method="POST" class="space-y-4">
                 {{ hobby_form.hidden_tag() }}
-                {{ hobby_form.name.label(class="text-sm font-semibold") }}
-                {{ hobby_form.name(class="w-full mt-1 p-2 bg-slate-100 rounded-lg") }}
-                {{ hobby_form.submit(value="Add Hobby", class="mt-4 bg-sky-500 text-white px-4 py-2 rounded-lg
-                font-semibold hover:bg-sky-600 transition cursor-pointer") }}
+                <template x-for="(entry, index) in hobbyEntries" :key="index">
+                    <div class="bg-slate-50 p-4 rounded-lg relative">
+                        <button x-show="hobbyEntries.length > 1" @click="hobbyEntries.splice(index, 1)" type="button"
+                            class="absolute top-2 right-2 text-red-500 hover:text-red-700 transition">
+                            <i class="fa fa-times"></i>
+                        </button>
+                        <div>
+                            <label class="text-sm font-semibold text-slate-600 block mb-1">Hobby Name</label>
+                            <input type="text" :name="'hobby_name_' + index"
+                                class="w-full p-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent transition">
+                        </div>
+                    </div>
+                </template>
+                <input type="hidden" name="hobby_entries_count" :value="hobbyEntries.length">
+                <button type="submit" name="submit_hobby" value="Add Hobbies"
+                    class="bg-sky-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-sky-600 transition cursor-pointer">
+                    Save All Hobbies
+                </button>
             </form>
         </div>
     </div>
 </div>
 
-<!-- Alpine.js for the tabs -->
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<!-- Alpine.js for the tabs and dynamic forms -->
 <script src="//unpkg.com/alpinejs" defer></script>
 {% endblock %}

@@ -4,7 +4,9 @@ from datetime import datetime
 
 db = SQLAlchemy()
 
-# models.py
+# ========================
+# User & Student Models
+# ========================
 
 class User(db.Model, UserMixin):
     id = db.Column(db.String(15), primary_key=True)
@@ -28,6 +30,9 @@ class User(db.Model, UserMixin):
     skills = db.relationship('Skill', backref='user', lazy=True)
     hobbies = db.relationship('Hobby', backref='user', lazy=True)
 
+    comments = db.relationship("PostComment", backref="author", lazy=True, cascade="all, delete-orphan")
+    votes = db.relationship("PostVote", backref="voter", lazy=True, cascade="all, delete-orphan")
+
     def get_id(self):
         return f"U_{self.id}"
 
@@ -35,6 +40,30 @@ class User(db.Model, UserMixin):
     def user_type(self):
         return "student"
 
+
+class StudentBody(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False)
+    email = db.Column(db.String(200), unique=True, nullable=False)
+    body_type = db.Column(db.String(100), nullable=True)
+    description = db.Column(db.Text, nullable=True)
+    password = db.Column(db.String(200), nullable=False)
+    logo = db.Column(db.String(200), nullable=True)
+
+    posts = db.relationship("StudentBodyPost", backref="student_body", lazy=True, cascade="all, delete-orphan")
+    events = db.relationship("BodyEvent", backref="body", lazy=True, cascade="all, delete-orphan")
+
+    def get_id(self):
+        return f"B_{self.id}"  # unique prefix so it doesn’t collide with student IDs
+    
+    @property
+    def user_type(self):
+        return "body"
+
+
+# ========================
+# Other Entities
+# ========================
 
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -51,12 +80,6 @@ class Event(db.Model):
     date = db.Column(db.DateTime, default=datetime.utcnow)
 
 
-# models.py
-
-# models.py
-
-# models.py
-
 class WorkExperience(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     organization = db.Column(db.String(200), nullable=False)
@@ -64,6 +87,7 @@ class WorkExperience(db.Model):
     start_date = db.Column(db.Date, nullable=True)
     end_date = db.Column(db.Date, nullable=True)
     user_id = db.Column(db.String(15), db.ForeignKey('user.id'), nullable=False)
+
 
 class Internship(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -73,41 +97,23 @@ class Internship(db.Model):
     end_date = db.Column(db.Date, nullable=True)
     user_id = db.Column(db.String(15), db.ForeignKey('user.id'), nullable=False)
 
+
 class Certification(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
     user_id = db.Column(db.String(15), db.ForeignKey('user.id'), nullable=False)
+
 
 class Skill(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     user_id = db.Column(db.String(15), db.ForeignKey('user.id'), nullable=False)
 
+
 class Hobby(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     user_id = db.Column(db.String(15), db.ForeignKey('user.id'), nullable=False)
-
-
-# models.py (append or integrate)
-
-from datetime import datetime
-
-class StudentBody(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(200), nullable=False)
-    email = db.Column(db.String(200), unique=True, nullable=False)
-    body_type = db.Column(db.String(100), nullable=True)
-    description = db.Column(db.Text, nullable=True)
-    password = db.Column(db.String(200), nullable=False)
-    logo = db.Column(db.String(200), nullable=True)
-
-    def get_id(self):
-        return f"B_{self.id}"  # unique prefix so it doesn’t collide with student IDs
-    
-    @property
-    def user_type(self):
-        return "body"
 
 
 class BodyEvent(db.Model):
@@ -118,4 +124,36 @@ class BodyEvent(db.Model):
     date = db.Column(db.DateTime, default=datetime.utcnow)
     body_id = db.Column(db.Integer, db.ForeignKey('student_body.id'), nullable=False)
 
-    body = db.relationship('StudentBody', backref=db.backref('events', lazy=True))
+
+# ========================
+# Social Feed System
+# ========================
+
+class StudentBodyPost(db.Model):
+    __tablename__ = "student_body_posts"
+    id = db.Column(db.Integer, primary_key=True)
+    body_id = db.Column(db.Integer, db.ForeignKey("student_body.id"), nullable=False)
+    title = db.Column(db.String(200), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    image_url = db.Column(db.String(300))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    comments = db.relationship("PostComment", backref="post", lazy=True, cascade="all, delete-orphan")
+    votes = db.relationship("PostVote", backref="post", lazy=True, cascade="all, delete-orphan")
+
+
+class PostComment(db.Model):
+    __tablename__ = "post_comments"
+    id = db.Column(db.Integer, primary_key=True)
+    post_id = db.Column(db.Integer, db.ForeignKey("student_body_posts.id"), nullable=False)
+    user_id = db.Column(db.String(15), db.ForeignKey("user.id"), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+class PostVote(db.Model):
+    __tablename__ = "post_votes"
+    id = db.Column(db.Integer, primary_key=True)
+    post_id = db.Column(db.Integer, db.ForeignKey("student_body_posts.id"), nullable=False)
+    user_id = db.Column(db.String(15), db.ForeignKey("user.id"), nullable=False)
+    vote = db.Column(db.Integer, nullable=False)  # +1 or -1
