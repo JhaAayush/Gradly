@@ -2,62 +2,138 @@
 {% block title %}Feed{% endblock %}
 
 {% block content %}
-<div class="max-w-3xl mx-auto mt-6 space-y-6">
+<div class="bg-gray-50 min-h-screen py-6">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-    {% for post in posts %}
-    <div class="bg-white rounded-2xl shadow p-4">
-        <div class="flex justify-between items-center">
-            <h2 class="text-xl font-semibold">{{ post.title }}</h2>
-            <span class="text-gray-500 text-sm">{{ post.created_at.strftime("%b %d, %Y") }}</span>
-        </div>
-
-        <p class="mt-2 text-gray-700">{{ post.content }}</p>
-
-        {% if post.image_url %}
-        <img src="{{ url_for('static', filename=post.image_url) }}" class="mt-3 rounded-lg">
-        {% endif %}
-
-        <!-- Votes -->
-        <div class="flex items-center mt-3 space-x-3">
-            <button onclick="vote({{ post.id }}, 'upvote')"
-                class="px-3 py-1 bg-green-100 text-green-700 rounded-lg hover:bg-green-200">⬆</button>
-            <span id="score-{{ post.id }}" class="font-medium">
-                {{ post.votes | map(attribute="vote") | sum }}
-            </span>
-            <button onclick="vote({{ post.id }}, 'downvote')"
-                class="px-3 py-1 bg-red-100 text-red-700 rounded-lg hover:bg-red-200">⬇</button>
-        </div>
-
-        <!-- Comments -->
-        <div class="mt-4">
-            <h3 class="font-semibold text-gray-800">Comments</h3>
-            <div id="comments-{{ post.id }}" class="space-y-2 mt-2">
-                {% for c in post.comments %}
-                <div class="bg-gray-50 p-2 rounded-lg text-sm">
-                    <span class="font-medium">{{ c.author.name }}</span>: {{ c.content }}
+        <aside class="hidden lg:block lg:col-span-3 space-y-6">
+            <div class="bg-white shadow rounded-xl p-5 text-center">
+                <div class="w-24 h-24 mx-auto relative">
+                    {% if current_user.profile_pic %}
+                    <img src="{{ url_for('static', filename=current_user.profile_pic) }}"
+                        class="rounded-full w-full h-full object-cover">
+                    {% else %}
+                    <img src="{{ url_for('static', filename='default-profile.png') }}"
+                        class="rounded-full w-full h-full object-cover">
+                    {% endif %}
+                    <span
+                        class="absolute bottom-1 right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></span>
                 </div>
-                {% endfor %}
+                <h2 class="mt-3 font-bold text-lg text-gray-800">{{ current_user.name }}</h2>
+                <p class="text-sm text-gray-500">Student</p>
+                <a href="{{ url_for('profile.view_profile', user_id=current_user.id) }}"
+                    class="mt-4 inline-block bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 font-medium text-sm">View
+                    Profile</a>
             </div>
 
-            <!-- Comment form -->
-            <form onsubmit="submitComment(event, {{ post.id }})" class="mt-2 flex">
-                <input type="text" name="comment" placeholder="Write a comment..."
-                    class="flex-1 border rounded-l-lg px-3 py-1 focus:outline-none" required>
-                <button type="submit"
-                    class="px-3 py-1 bg-blue-500 text-white rounded-r-lg hover:bg-blue-600">Post</button>
-            </form>
-        </div>
-    </div>
-    {% endfor %}
+            <div class="bg-white shadow rounded-xl p-4">
+                <nav class="space-y-2">
+                    <a href="{{ url_for('posts.feed') }}"
+                        class="block px-3 py-2 rounded-lg bg-indigo-50 text-indigo-700 font-semibold">🏠 Feed</a>
+                    <a href="{{ url_for('events.view_events') }}"
+                        class="block px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100">📅 Events</a>
+                    <a href="#" class="block px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100">👥 Student Bodies</a>
+                    <a href="{{ url_for('profile.edit_profile') }}"
+                        class="block px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100">⚙️ Settings</a>
+                </nav>
+            </div>
+        </aside>
 
+        <main class="lg:col-span-6 space-y-6">
+            {% for post in posts %}
+            <div class="bg-white shadow rounded-2xl p-6">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-lg font-semibold text-gray-800">{{ post.title }}</h2>
+                    <span class="text-sm text-gray-500">{{ post.created_at.strftime("%b %d, %Y %H:%M") }}</span>
+                </div>
+
+                <p class="mt-3 text-gray-700">{{ post.content }}</p>
+                {% if post.image_url %}
+                <img src="{{ url_for('static', filename=post.image_url) }}"
+                    class="mt-4 rounded-lg border border-gray-200 max-w-lg mx-auto block">
+                {% endif %}
+
+                <div class="flex items-center mt-4 space-x-3">
+                    <button onclick="vote({{ post.id }}, 'upvote')"
+                        class="px-3 py-1 bg-green-100 text-green-700 rounded-lg hover:bg-green-200">⬆</button>
+                    <span id="score-{{ post.id }}" class="font-semibold text-gray-800">
+                        {{ post.votes | map(attribute="vote") | sum }}
+                    </span>
+                    <button onclick="vote({{ post.id }}, 'downvote')"
+                        class="px-3 py-1 bg-red-100 text-red-700 rounded-lg hover:bg-red-200">⬇</button>
+                </div>
+
+    <div class="mt-5">
+        <h3 class="font-semibold text-gray-800 mb-2">Comments</h3>
+        <div id="comments-{{ post.id }}" class="space-y-2">
+            {% for c in post.comments %}
+            <div class="bg-gray-50 p-2 rounded-lg text-sm">
+                <a href="{{ url_for('profile.view_profile', user_id=c.author.id) }}"
+                    class="font-medium text-indigo-600 hover:underline">
+                    {{ c.author.name if c.author else "User" }}
+                </a>: {{ c.content }}
+            </div>
+            {% endfor %}
+        </div>
+    
+        <form onsubmit="submitComment(event, {{ post.id }})" class="mt-3 flex">
+            <input type="text" name="comment" placeholder="Write a comment..."
+                class="flex-1 border border-gray-300 rounded-l-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                required>
+            <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-r-lg hover:bg-indigo-700">Post</button>
+        </form>
+    </div>
+
+            </div>
+            {% else %}
+            <div class="text-center py-20 bg-white shadow rounded-xl">
+                <h2 class="text-2xl font-bold text-gray-600">No posts yet!</h2>
+                <p class="text-gray-500">The feed is empty. Check back later for updates.</p>
+            </div>
+            {% endfor %}
+        </main>
+
+        <aside class="hidden lg:block lg:col-span-3 space-y-6">
+            <div class="bg-white shadow rounded-xl p-5">
+                <h3 class="font-semibold text-gray-800 text-lg mb-4">Upcoming Events</h3>
+                {% if events %}
+                <ul class="space-y-3">
+                    {% for event in events %}
+                    <li class="flex gap-4 items-center">
+                        <div
+                            class="bg-indigo-100 text-indigo-600 font-bold w-12 h-12 rounded-lg flex flex-col items-center justify-center">
+                            <span>{{ event.date.strftime("%b") }}</span>
+                            <span>{{ event.date.strftime("%d") }}</span>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-gray-800">{{ event.title }}</p>
+                            <p class="text-sm text-gray-500">{{ event.date.strftime("%I:%M %p") }}</p>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-gray-500 text-sm">No upcoming events.</p>
+                {% endif %}
+            </div>
+
+            <div class="bg-white shadow rounded-xl p-5">
+                <h3 class="font-semibold text-gray-800 text-lg mb-4">Quick Links</h3>
+                <ul class="space-y-2">
+                    <li><a href="{{ url_for('profile.view_profile', user_id=current_user.id) }}"
+                            class="text-indigo-600 hover:underline">My Profile</a></li>
+                    <li><a href="{{ url_for('events.view_events') }}" class="text-indigo-600 hover:underline">All
+                            Events</a></li>
+                    <li><a href="#" class="text-indigo-600 hover:underline">Student Bodies</a></li>
+                </ul>
+            </div>
+        </aside>
+
+    </div>
 </div>
 
 <script>
     async function vote(postId, action) {
-        const res = await fetch(`/posts/vote/${postId}/${action}`, {
-            method: "POST",
-            headers: { "X-Requested-With": "XMLHttpRequest" }
-        });
+        const res = await fetch(`/posts/vote/${postId}/${action}`, { method: "POST" });
         const data = await res.json();
         if (data.success) {
             document.getElementById(`score-${postId}`).innerText = data.score;
@@ -76,13 +152,11 @@
         });
 
         if (res.ok) {
-            // Append comment without reload
             const commentsDiv = document.getElementById(`comments-${postId}`);
             const newDiv = document.createElement("div");
             newDiv.className = "bg-gray-50 p-2 rounded-lg text-sm";
             newDiv.innerText = "You: " + comment;
             commentsDiv.appendChild(newDiv);
-
             form.reset();
         }
     }
