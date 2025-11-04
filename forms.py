@@ -34,8 +34,9 @@ class EditProfileForm(FlaskForm):
     phone = StringField("Phone", validators=[Optional()])
     cgpa = FloatField("CGPA", validators=[Optional()])
     profile_pic = FileField("Profile Picture")
+    linkedin_url = StringField("LinkedIn URL", validators=[Optional()])
     resume = FileField("Resume (PDF)")
-
+    dob = DateField("Date of Birth", format="%Y-%m-%d", validators=[Optional()])
     show_email = BooleanField("Show Email")
     show_phone = BooleanField("Show Phone")
     show_cgpa = BooleanField("Show CGPA")

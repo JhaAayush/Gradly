@@ -25,26 +25,38 @@
             <p class="mt-3 text-sm bg-sky-500/20 text-sky-200 px-4 py-1 inline-block rounded-full font-semibold">CGPA:
                 {{ user.cgpa }}</p>
             {% endif %}
+            
         </div>
     </div>
 </div>
 
 <div class="grid md:grid-cols-3 gap-8">
     <div class="md:col-span-1 space-y-8">
-        <div class="bg-white/70 backdrop-blur-lg p-6 rounded-2xl shadow-lg border border-slate-200">
-            <h2 class="text-xl font-bold text-slate-800 mb-4">Contact Information</h2>
-            <div class="space-y-3 text-slate-600">
-                {% if user.show_email %}
-                <p class="flex items-center gap-3"><i class="fa fa-envelope w-4 text-center text-sky-500"></i> <a
-                        href="mailto:{{ user.email }}" class="hover:text-sky-600 hover:underline">{{ user.email }}</a>
-                </p>
-                {% endif %}
-                {% if user.show_phone %}
-                <p class="flex items-center gap-3"><i class="fa fa-phone w-4 text-center text-sky-500"></i> <span>{{
-                        user.phone or 'Not Provided' }}</span></p>
-                {% endif %}
-            </div>
-        </div>
+<div class="bg-white/70 backdrop-blur-lg p-6 rounded-2xl shadow-lg border border-slate-200">
+    <h2 class="text-xl font-bold text-slate-800 mb-4">Personal Information</h2>
+    <div class="space-y-3 text-slate-600">
+        {% if user.show_email %}
+        <p class="flex items-center gap-3"><i class="fa fa-envelope w-4 text-center text-sky-500"></i>
+            <a href="mailto:{{ user.email }}" class="hover:text-sky-600 hover:underline">{{ user.email }}</a>
+        </p>
+        {% endif %}
+        {% if user.show_phone %}
+        <p class="flex items-center gap-3"><i class="fa fa-phone w-4 text-center text-sky-500"></i>
+            <span>{{ user.phone or 'Not Provided' }}</span>
+        </p>
+        {% endif %}
+        {% if user.linkedin_url %}
+        <p class="flex items-center gap-3"><i class="fab fa-linkedin w-4 text-center text-sky-600"></i>
+            <a href="{{ user.linkedin_url }}" target="_blank" class="hover:text-sky-600 hover:underline">LinkedIn</a>
+        </p>
+        {% endif %}
+        {% if user.dob %}
+        <p class="flex items-center gap-3"><i class="fa fa-calendar w-4 text-center text-sky-500"></i>
+            <span>DOB: {{ user.dob.strftime('%d %b %Y') }}</span>
+        </p>
+        {% endif %}
+    </div>
+</div>
 
         <div class="bg-white/70 backdrop-blur-lg p-6 rounded-2xl shadow-lg border border-slate-200">
             <h2 class="text-xl font-bold text-slate-800 mb-4">Academic Info</h2>

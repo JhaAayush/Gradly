@@ -2,8 +2,91 @@
 {% block title %}Feed{% endblock %}
 
 {% block content %}
-<div class="bg-gray-50 min-h-screen py-6">
-    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
+<div x-data="{ navOpen: false }" class="bg-gray-50 min-h-screen">
+
+    <header class="bg-white/80 backdrop-blur-lg border-b border-gray-200 sticky top-0 z-30 lg:hidden">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <div class="font-bold text-xl text-indigo-600">
+                    CampusConnect
+                </div>
+
+                <button @click="navOpen = !navOpen" class="text-gray-600 hover:text-indigo-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16m-7 6h7"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div x-show="navOpen" x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="transform -translate-x-full" x-transition:enter-end="transform translate-x-0"
+        x-transition:leave="transition ease-in duration-300" x-transition:leave-start="transform translate-x-0"
+        x-transition:leave-end="transform -translate-x-full"
+        class="fixed top-0 left-0 w-72 h-full bg-white shadow-lg z-50 overflow-y-auto lg:hidden" x-cloak>
+
+        <div class="p-5 text-center border-b">
+            <div class="w-24 h-24 mx-auto relative">
+                {% if current_user.profile_pic %}
+                <img src="{{ url_for('static', filename=current_user.profile_pic) }}"
+                    class="rounded-full w-full h-full object-cover">
+                {% else %}
+                <img src="{{ url_for('static', filename='default-profile.png') }}"
+                    class="rounded-full w-full h-full object-cover">
+                {% endif %}
+                <span class="absolute bottom-1 right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></span>
+            </div>
+            <h2 class="mt-3 font-bold text-lg text-gray-800">{{ current_user.name }}</h2>
+            <p class="text-sm text-gray-500">Student</p>
+            <a href="{{ url_for('profile.view_profile', user_id=current_user.id) }}"
+                class="mt-4 inline-block bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 font-medium text-sm">View
+                Profile</a>
+        </div>
+
+        <nav class="p-4 space-y-2 border-b">
+            <a href="{{ url_for('posts.feed') }}"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg bg-indigo-50 text-indigo-700 font-semibold">🏠
+                Feed</a>
+            <a href="{{ url_for('events.view_events') }}"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100">📅 Events</a>
+            <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100">👥
+                Student Bodies</a>
+            <a href="{{ url_for('profile.edit_profile') }}"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100">⚙️ Settings</a>
+        </nav>
+
+        <div class="p-5">
+            <h3 class="font-semibold text-gray-800 text-lg mb-4">Upcoming Events</h3>
+            {% if events %}
+            <ul class="space-y-3">
+                {% for event in events %}
+                <li class="flex gap-4 items-center">
+                    <div
+                        class="bg-indigo-100 text-indigo-600 font-bold w-12 h-12 rounded-lg flex flex-col items-center justify-center">
+                        <span>{{ event.date.strftime("%b") }}</span>
+                        <span>{{ event.date.strftime("%d") }}</span>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-800">{{ event.title }}</p>
+                        <p class="text-sm text-gray-500">{{ event.date.strftime("%I:%M %p") }}</p>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-gray-500 text-sm">No upcoming events.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div x-show="navOpen" @click="navOpen = false" x-transition.opacity class="fixed inset-0 bg-black/30 z-40 lg:hidden"
+        x-cloak></div>
+
+
+    <div class="max-w-7xl mx-auto py-0 lg:py-6 grid grid-cols-1 lg:grid-cols-12 lg:gap-8">
 
         <aside class="hidden lg:block lg:col-span-3 space-y-6">
             <div class="bg-white shadow rounded-xl p-5 text-center">
@@ -24,7 +107,6 @@
                     class="mt-4 inline-block bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 font-medium text-sm">View
                     Profile</a>
             </div>
-
             <div class="bg-white shadow rounded-xl p-4">
                 <nav class="space-y-2">
                     <a href="{{ url_for('posts.feed') }}"
@@ -38,51 +120,48 @@
             </div>
         </aside>
 
-        <main class="lg:col-span-6 space-y-6">
+        <main class="lg:col-span-6 space-y-0 lg:space-y-6">
             {% for post in posts %}
-            <div class="bg-white shadow rounded-2xl p-6">
-                <div class="flex justify-between items-center">
+            <div class="bg-white sm:rounded-2xl sm:shadow mb-6 lg:mb-0 border-b sm:border-none">
+                <div class="p-4 flex justify-between items-start gap-4">
                     <h2 class="text-lg font-semibold text-gray-800">{{ post.title }}</h2>
-                    <span class="text-sm text-gray-500">{{ post.created_at.strftime("%b %d, %Y %H:%M") }}</span>
+                    <span class="text-sm text-gray-500 flex-shrink-0">{{ post.created_at.strftime("%b %d") }}</span>
                 </div>
 
-                <p class="mt-3 text-gray-700">{{ post.content }}</p>
                 {% if post.image_url %}
                 <img src="{{ url_for('static', filename=post.image_url) }}"
-                    class="mt-4 rounded-lg border border-gray-200 max-w-lg mx-auto block">
+                    class="w-full h-auto max-h-[80vh] object-cover">
                 {% endif %}
 
-                <div class="flex items-center mt-4 space-x-3">
-                    <button onclick="vote({{ post.id }}, 'upvote')"
-                        class="px-3 py-1 bg-green-100 text-green-700 rounded-lg hover:bg-green-200">⬆</button>
-                    <span id="score-{{ post.id }}" class="font-semibold text-gray-800">
-                        {{ post.votes | map(attribute="vote") | sum }}
-                    </span>
-                    <button onclick="vote({{ post.id }}, 'downvote')"
-                        class="px-3 py-1 bg-red-100 text-red-700 rounded-lg hover:bg-red-200">⬇</button>
+                <div class="p-4">
+                    <p class="text-gray-700">{{ post.content }}</p>
+
+                    <div class="flex items-center mt-4 space-x-3">
+                        <button onclick="vote({{ post.id }}, 'upvote')"
+                            class="px-3 py-1 bg-green-100 text-green-700 rounded-lg hover:bg-green-200">⬆</button>
+                        <span id="score-{{ post.id }}" class="font-semibold text-gray-800">
+                            {{ post.votes | map(attribute="vote") | sum }}
+                        </span>
+                        <button onclick="vote({{ post.id }}, 'downvote')"
+                            class="px-3 py-1 bg-red-100 text-red-700 rounded-lg hover:bg-red-200">⬇</button>
+                    </div>
+
+                    <div class="mt-5 border-t border-gray-100 pt-4">
+                        <div id="comments-{{ post.id }}" class="space-y-2">
+                            {% for c in post.comments %}
+                            <div class="text-sm">
+                                <a href="{{ url_for('profile.view_profile', user_id=c.author.id) }}"
+                                    class="font-medium text-indigo-600 hover:underline">{{ c.author.name if c.author
+                                    else "User" }}</a>: {{ c.content }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <form onsubmit="submitComment(event, {{ post.id }})" class="mt-3">
+                            <input type="text" name="comment" placeholder="Add a comment..."
+                                class="w-full border-none bg-transparent p-0 focus:ring-0 text-sm" required>
+                        </form>
+                    </div>
                 </div>
-
-    <div class="mt-5">
-        <h3 class="font-semibold text-gray-800 mb-2">Comments</h3>
-        <div id="comments-{{ post.id }}" class="space-y-2">
-            {% for c in post.comments %}
-            <div class="bg-gray-50 p-2 rounded-lg text-sm">
-                <a href="{{ url_for('profile.view_profile', user_id=c.author.id) }}"
-                    class="font-medium text-indigo-600 hover:underline">
-                    {{ c.author.name if c.author else "User" }}
-                </a>: {{ c.content }}
-            </div>
-            {% endfor %}
-        </div>
-    
-        <form onsubmit="submitComment(event, {{ post.id }})" class="mt-3 flex">
-            <input type="text" name="comment" placeholder="Write a comment..."
-                class="flex-1 border border-gray-300 rounded-l-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                required>
-            <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-r-lg hover:bg-indigo-700">Post</button>
-        </form>
-    </div>
-
             </div>
             {% else %}
             <div class="text-center py-20 bg-white shadow rounded-xl">
@@ -115,7 +194,6 @@
                 <p class="text-gray-500 text-sm">No upcoming events.</p>
                 {% endif %}
             </div>
-
             <div class="bg-white shadow rounded-xl p-5">
                 <h3 class="font-semibold text-gray-800 text-lg mb-4">Quick Links</h3>
                 <ul class="space-y-2">
@@ -131,34 +209,62 @@
     </div>
 </div>
 
+<!-- Put the vote/comment functions here so they are guaranteed to be in page scope -->
 <script>
-    async function vote(postId, action) {
-        const res = await fetch(`/posts/vote/${postId}/${action}`, { method: "POST" });
-        const data = await res.json();
-        if (data.success) {
-            document.getElementById(`score-${postId}`).innerText = data.score;
+    // define as globals so inline onclick handlers work
+    window.vote = async function (postId, action) {
+        try {
+            const res = await fetch(`/posts/vote/${postId}/${action}`, { method: "POST" });
+            if (!res.ok) {
+                console.error('Vote request failed:', res.status);
+                return;
+            }
+            const data = await res.json();
+            if (data && data.success) {
+                const el = document.getElementById(`score-${postId}`);
+                if (el) el.innerText = data.score;
+            }
+        } catch (err) {
+            console.error('Vote failed:', err);
         }
-    }
+    };
 
-    async function submitComment(e, postId) {
+    window.submitComment = async function (e, postId) {
         e.preventDefault();
         const form = e.target;
-        const comment = form.comment.value;
+        const comment = form.comment.value && form.comment.value.trim();
+        if (!comment) return;
 
-        const res = await fetch(`/posts/comment/${postId}`, {
-            method: "POST",
-            body: new URLSearchParams({ comment: comment }),
-            headers: { "Content-Type": "application/x-www-form-urlencoded" }
-        });
+        try {
+            const res = await fetch(`/posts/comment/${postId}`, {
+                method: "POST",
+                body: new URLSearchParams({ comment: comment }),
+                headers: { "Content-Type": "application/x-www-form-urlencoded" }
+            });
 
-        if (res.ok) {
-            const commentsDiv = document.getElementById(`comments-${postId}`);
-            const newDiv = document.createElement("div");
-            newDiv.className = "bg-gray-50 p-2 rounded-lg text-sm";
-            newDiv.innerText = "You: " + comment;
-            commentsDiv.appendChild(newDiv);
-            form.reset();
+            if (res.ok) {
+                const commentsDiv = document.getElementById(`comments-${postId}`);
+                const newDiv = document.createElement("div");
+                newDiv.className = "text-sm";
+                // show link to current user's profile
+                const userLink = document.createElement("a");
+                userLink.href = "{{ url_for('profile.view_profile', user_id=current_user.id) }}";
+                userLink.className = "font-medium text-indigo-600 hover:underline";
+                userLink.textContent = "{{ current_user.name }}";
+                newDiv.appendChild(userLink);
+                newDiv.insertAdjacentHTML('beforeend', ': ' + comment);
+                commentsDiv.appendChild(newDiv);
+                form.reset();
+            } else {
+                console.error('Comment post failed, status:', res.status);
+            }
+        } catch (err) {
+            console.error('Comment failed:', err);
         }
-    }
+    };
 </script>
+{% endblock %}
+
+{% block scripts %}
+<!-- keep this block empty or for extra stuff you intentionally want injected in parent -->
 {% endblock %}

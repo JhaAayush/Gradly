@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
-from datetime import datetime
+from datetime import datetime, date
 
 db = SQLAlchemy()
 
@@ -17,6 +17,11 @@ class User(db.Model, UserMixin):
     resume = db.Column(db.String(200), nullable=True)
     phone = db.Column(db.String(20), nullable=True)
     profile_pic = db.Column(db.String(200), nullable=True)
+
+    # new fields
+    linkedin_url = db.Column(db.String(300), nullable=True)
+    dob = db.Column(db.Date, nullable=True)
+    is_admin = db.Column(db.Boolean, default=False)
 
     # Privacy flags
     show_email = db.Column(db.Boolean, default=True)
@@ -50,12 +55,16 @@ class StudentBody(db.Model, UserMixin):
     password = db.Column(db.String(200), nullable=False)
     logo = db.Column(db.String(200), nullable=True)
 
+    # new socials
+    linkedin_url = db.Column(db.String(300), nullable=True)
+    instagram_url = db.Column(db.String(300), nullable=True)
+
     posts = db.relationship("StudentBodyPost", backref="student_body", lazy=True, cascade="all, delete-orphan")
     events = db.relationship("BodyEvent", backref="body", lazy=True, cascade="all, delete-orphan")
 
     def get_id(self):
-        return f"B_{self.id}"  # unique prefix so it doesn’t collide with student IDs
-    
+        return f"B_{self.id}"
+
     @property
     def user_type(self):
         return "body"
@@ -120,7 +129,7 @@ class BodyEvent(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(250), nullable=False)
     description = db.Column(db.Text, nullable=True)
-    poster = db.Column(db.String(200), nullable=True)  # path in static/uploads/
+    poster = db.Column(db.String(200), nullable=True)
     date = db.Column(db.DateTime, default=datetime.utcnow)
     body_id = db.Column(db.Integer, db.ForeignKey('student_body.id'), nullable=False)
 

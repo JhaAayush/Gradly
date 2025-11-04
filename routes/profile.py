@@ -46,7 +46,9 @@ def edit_profile():
         current_user.show_email = profile_form.show_email.data
         current_user.show_phone = profile_form.show_phone.data
         current_user.show_cgpa = profile_form.show_cgpa.data
-        
+        current_user.linkedin_url = profile_form.linkedin_url.data
+        current_user.dob = profile_form.dob.data
+
         # ✅ Handle resume upload
         if profile_form.resume.data and hasattr(profile_form.resume.data, "filename") and profile_form.resume.data.filename:
             if current_user.resume:
