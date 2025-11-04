@@ -13,6 +13,7 @@ from routes.studentbody import studentbody_bp
 from routes.studentbody_auth import studentbody_auth_bp
 from routes.resources import resources_bp
 from routes.posts import posts_bp
+from flask_migrate import Migrate
 
 app = Flask(__name__)
 
@@ -28,6 +29,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Init extensions
 db.init_app(app)
+migrate = Migrate(app, db)  # ← Add this line to initialize Flask-Migrate
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'auth.login'

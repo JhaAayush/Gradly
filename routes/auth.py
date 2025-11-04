@@ -18,8 +18,13 @@ def register():
     form = RegisterForm()
     if form.validate_on_submit():
         hashed_pw = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        
+        # --- NEW LINE ---
+        # Remove slashes from the roll number
+        cleaned_id = form.roll_number.data.replace('/', '')
+        
         user = User(
-            id=form.roll_number.data,  # Roll number as primary key
+            id=cleaned_id,  # Use the cleaned ID
             name=form.name.data,
             email=form.email.data,
             password=hashed_pw
@@ -30,7 +35,6 @@ def register():
         return redirect(url_for('auth.login'))
     return render_template('register.html', form=form)
 
-
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -38,9 +42,10 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         # Allow login by roll number or email
+        cleaned_id = form.email_or_roll.data.replace('/', '')
         user = User.query.filter(
             (User.email == form.email_or_roll.data) |
-            (User.id == form.email_or_roll.data)
+            (User.id == cleaned_id)
         ).first()
 
         if user and bcrypt.check_password_hash(user.password, form.password.data):

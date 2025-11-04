@@ -41,9 +41,16 @@
             </div>
             <h2 class="mt-3 font-bold text-lg text-gray-800">{{ current_user.name }}</h2>
             <p class="text-sm text-gray-500">Student</p>
+
+            {% if current_user.user_type == 'student' %}
             <a href="{{ url_for('profile.view_profile', user_id=current_user.id) }}"
                 class="mt-4 inline-block bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 font-medium text-sm">View
                 Profile</a>
+            {% else %}
+            <a href="{{ url_for('studentbody.body_profile', body_id=current_user.id) }}"
+                class="mt-4 inline-block bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 font-medium text-sm">View
+                Profile</a>
+            {% endif %}
         </div>
 
         <nav class="p-4 space-y-2 border-b">
@@ -103,9 +110,16 @@
                 </div>
                 <h2 class="mt-3 font-bold text-lg text-gray-800">{{ current_user.name }}</h2>
                 <p class="text-sm text-gray-500">Student</p>
+
+                {% if current_user.user_type == 'student' %}
                 <a href="{{ url_for('profile.view_profile', user_id=current_user.id) }}"
                     class="mt-4 inline-block bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 font-medium text-sm">View
                     Profile</a>
+                {% else %}
+                <a href="{{ url_for('studentbody.body_profile', body_id=current_user.id) }}"
+                    class="mt-4 inline-block bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 font-medium text-sm">View
+                    Profile</a>
+                {% endif %}
             </div>
             <div class="bg-white shadow rounded-xl p-4">
                 <nav class="space-y-2">
@@ -122,28 +136,35 @@
 
         <main class="lg:col-span-6 space-y-0 lg:space-y-6">
             <div class="mb-6">
-                <a href="{{ url_for('posts.create_post') }}" class="w-full text-center block bg-blue-600 text-white px-4 py-3 rounded-lg shadow hover:bg-blue-700 font-medium">
+                <a href="{{ url_for('posts.create_post') }}"
+                    class="w-full text-center block bg-indigo-600 text-white px-4 py-3 rounded-lg shadow hover:bg-indigo-700 font-medium transition-colors">
                     Create Post
                 </a>
             </div>
+
             {% for post in posts %}
             <div class="bg-white sm:rounded-2xl sm:shadow mb-6 lg:mb-0 border-b sm:border-none">
                 <div class="p-4 flex items-center gap-3">
                     {% if post.author.user_type == 'student' %}
-                        <img src="{{ url_for('static', filename=post.author.profile_pic or 'default-profile.png') }}" class="w-10 h-10 rounded-full object-cover">
-                        <div>
-                            <a href="{{ url_for('profile.view_profile', user_id=post.author.id) }}" class="font-semibold text-gray-800 hover:underline">{{ post.author.name }}</a>
-                            <p class="text-xs text-gray-500">{{ post.created_at.strftime('%B %d, %Y') }}</p>
-                        </div>
+                    <img src="{{ url_for('static', filename=post.author.profile_pic or 'default-profile.png') }}"
+                        class="w-10 h-10 rounded-full object-cover">
+                    <div>
+                        <a href="{{ url_for('profile.view_profile', user_id=post.author.id) }}"
+                            class="font-semibold text-gray-800 hover:underline">{{ post.author.name }}</a>
+                        <p class="text-xs text-gray-500">{{ post.created_at.strftime('%B %d, %Y') }}</p>
+                    </div>
                     {% else %}
-                        <img src="{{ url_for('static', filename=post.author.logo or 'default-logo.png') }}" class="w-10 h-10 rounded-full object-cover">
-                        <div>
-                            <p class="font-semibold text-gray-800">{{ post.author.name }}</p>
-                            <p class="text-xs text-gray-500">{{ post.created_at.strftime('%B %d, %Y') }}</p>
-                        </div>
+                    <img src="{{ url_for('static', filename=post.author.logo or 'default-logo.png') }}"
+                        class="w-10 h-10 rounded-full object-cover">
+                    <div>
+                        <a href="{{ url_for('studentbody.body_profile', body_id=post.author.id) }}"
+                            class="font-semibold text-gray-800 hover:underline">{{ post.author.name }}</a>
+                        <p class="text-xs text-gray-500">{{ post.created_at.strftime('%B %d, %Y') }}</p>
+                    </div>
                     {% endif %}
                 </div>
-                <div class="p-4">
+
+                <div class="p-4 pt-0">
                     <h2 class="text-lg font-semibold text-gray-800">{{ post.title }}</h2>
                 </div>
 
@@ -153,7 +174,9 @@
                 {% endif %}
 
                 <div class="p-4">
-                    <p class="text-gray-700">{{ post.content }}</p>
+                    <div class="prose max-w-none text-gray-700">
+                        {{ post.content | safe }}
+                    </div>
 
                     <div class="flex items-center mt-4 space-x-3">
                         <button onclick="vote({{ post.id }}, 'upvote')"
@@ -169,15 +192,26 @@
                         <div id="comments-{{ post.id }}" class="space-y-2">
                             {% for c in post.comments %}
                             <div class="text-sm">
+                                {% if c.author.user_type == 'student' %}
                                 <a href="{{ url_for('profile.view_profile', user_id=c.author.id) }}"
                                     class="font-medium text-indigo-600 hover:underline">{{ c.author.name if c.author
                                     else "User" }}</a>: {{ c.content }}
+                                {% else %}
+                                <a href="{{ url_for('studentbody.body_profile', body_id=c.author.id) }}"
+                                    class="font-medium text-indigo-600 hover:underline">{{ c.author.name if c.author
+                                    else "User" }}</a>: {{ c.content }}
+                                {% endif %}
                             </div>
                             {% endfor %}
                         </div>
-                        <form onsubmit="submitComment(event, {{ post.id }})" class="mt-3">
+
+                        <form onsubmit="submitComment(event, {{ post.id }})" class="mt-4 flex items-center gap-2">
+                            <img src="{{ url_for('static', filename=current_user.profile_pic or 'default-profile.png') }}"
+                                class="w-8 h-8 rounded-full object-cover hidden sm:block">
                             <input type="text" name="comment" placeholder="Add a comment..."
-                                class="w-full border-none bg-transparent p-0 focus:ring-0 text-sm" required>
+                                class="w-full border border-gray-300 rounded-full bg-gray-50 px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm transition-colors"
+                                required>
+                            <button type="submit" class="hidden">Post</button>
                         </form>
                     </div>
                 </div>
@@ -216,8 +250,16 @@
             <div class="bg-white shadow rounded-xl p-5">
                 <h3 class="font-semibold text-gray-800 text-lg mb-4">Quick Links</h3>
                 <ul class="space-y-2">
-                    <li><a href="{{ url_for('profile.view_profile', user_id=current_user.id) }}"
-                            class="text-indigo-600 hover:underline">My Profile</a></li>
+
+                    <li>
+                        {% if current_user.user_type == 'student' %}
+                        <a href="{{ url_for('profile.view_profile', user_id=current_user.id) }}"
+                            class="text-indigo-600 hover:underline">My Profile</a>
+                        {% else %}
+                        <a href="{{ url_for('studentbody.body_profile', body_id=current_user.id) }}"
+                            class="text-indigo-600 hover:underline">My Profile</a>
+                        {% endif %}
+                    </li>
                     <li><a href="{{ url_for('events.view_events') }}" class="text-indigo-600 hover:underline">All
                             Events</a></li>
                     <li><a href="#" class="text-indigo-600 hover:underline">Student Bodies</a></li>
@@ -228,7 +270,6 @@
     </div>
 </div>
 
-<!-- Put the vote/comment functions here so they are guaranteed to be in page scope -->
 <script>
     // define as globals so inline onclick handlers work
     window.vote = async function (postId, action) {
@@ -251,7 +292,8 @@
     window.submitComment = async function (e, postId) {
         e.preventDefault();
         const form = e.target;
-        const comment = form.comment.value && form.comment.value.trim();
+        const commentInput = form.comment;
+        const comment = commentInput.value && commentInput.value.trim();
         if (!comment) return;
 
         try {
@@ -265,13 +307,20 @@
                 const commentsDiv = document.getElementById(`comments-${postId}`);
                 const newDiv = document.createElement("div");
                 newDiv.className = "text-sm";
-                // show link to current user's profile
+
                 const userLink = document.createElement("a");
+                {% if current_user.user_type == 'student' %}
                 userLink.href = "{{ url_for('profile.view_profile', user_id=current_user.id) }}";
+                {% else %}
+                userLink.href = "{{ url_for('studentbody.body_profile', body_id=current_user.id) }}";
+                {% endif %}
                 userLink.className = "font-medium text-indigo-600 hover:underline";
                 userLink.textContent = "{{ current_user.name }}";
                 newDiv.appendChild(userLink);
-                newDiv.insertAdjacentHTML('beforeend', ': ' + comment);
+
+                // Use createTextNode to safely append the comment text
+                newDiv.appendChild(document.createTextNode(': ' + comment));
+
                 commentsDiv.appendChild(newDiv);
                 form.reset();
             } else {
@@ -285,5 +334,4 @@
 {% endblock %}
 
 {% block scripts %}
-<!-- keep this block empty or for extra stuff you intentionally want injected in parent -->
 {% endblock %}
