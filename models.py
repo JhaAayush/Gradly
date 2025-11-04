@@ -37,6 +37,7 @@ class User(db.Model, UserMixin):
 
     comments = db.relationship("PostComment", backref="author", lazy=True, cascade="all, delete-orphan")
     votes = db.relationship("PostVote", backref="voter", lazy=True, cascade="all, delete-orphan")
+    posts = db.relationship("Post", backref="user", lazy=True, cascade="all, delete-orphan")
 
     def get_id(self):
         return f"U_{self.id}"
@@ -59,7 +60,7 @@ class StudentBody(db.Model, UserMixin):
     linkedin_url = db.Column(db.String(300), nullable=True)
     instagram_url = db.Column(db.String(300), nullable=True)
 
-    posts = db.relationship("StudentBodyPost", backref="student_body", lazy=True, cascade="all, delete-orphan")
+    posts = db.relationship("Post", backref="student_body", lazy=True, cascade="all, delete-orphan")
     events = db.relationship("BodyEvent", backref="body", lazy=True, cascade="all, delete-orphan")
 
     def get_id(self):
@@ -138,14 +139,22 @@ class BodyEvent(db.Model):
 # Social Feed System
 # ========================
 
-class StudentBodyPost(db.Model):
-    __tablename__ = "student_body_posts"
+class Post(db.Model):
+    __tablename__ = "posts"
     id = db.Column(db.Integer, primary_key=True)
-    body_id = db.Column(db.Integer, db.ForeignKey("student_body.id"), nullable=False)
     title = db.Column(db.String(200), nullable=False)
     content = db.Column(db.Text, nullable=False)
     image_url = db.Column(db.String(300))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Author relationship
+    user_id = db.Column(db.String(15), db.ForeignKey("user.id"), nullable=True)
+    body_id = db.Column(db.Integer, db.ForeignKey("student_body.id"), nullable=True)
+
+    # Polymorphic relationship to author
+    @property
+    def author(self):
+        return self.user or self.student_body
 
     comments = db.relationship("PostComment", backref="post", lazy=True, cascade="all, delete-orphan")
     votes = db.relationship("PostVote", backref="post", lazy=True, cascade="all, delete-orphan")
@@ -154,7 +163,7 @@ class StudentBodyPost(db.Model):
 class PostComment(db.Model):
     __tablename__ = "post_comments"
     id = db.Column(db.Integer, primary_key=True)
-    post_id = db.Column(db.Integer, db.ForeignKey("student_body_posts.id"), nullable=False)
+    post_id = db.Column(db.Integer, db.ForeignKey("posts.id"), nullable=False)
     user_id = db.Column(db.String(15), db.ForeignKey("user.id"), nullable=False)
     content = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -163,6 +172,6 @@ class PostComment(db.Model):
 class PostVote(db.Model):
     __tablename__ = "post_votes"
     id = db.Column(db.Integer, primary_key=True)
-    post_id = db.Column(db.Integer, db.ForeignKey("student_body_posts.id"), nullable=False)
+    post_id = db.Column(db.Integer, db.ForeignKey("posts.id"), nullable=False)
     user_id = db.Column(db.String(15), db.ForeignKey("user.id"), nullable=False)
     vote = db.Column(db.Integer, nullable=False)  # +1 or -1

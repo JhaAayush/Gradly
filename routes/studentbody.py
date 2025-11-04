@@ -2,7 +2,7 @@ import os
 from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app, abort
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
-from models import db, StudentBody, BodyEvent, StudentBodyPost
+from models import db, StudentBody, BodyEvent, Post
 from forms import BodyEventForm, BodyPostForm
 
 studentbody_bp = Blueprint('studentbody', __name__)
@@ -78,7 +78,7 @@ def body_dashboard(body_id):
     post_form = BodyPostForm()
 
     events = BodyEvent.query.filter_by(body_id=body.id).order_by(BodyEvent.date.desc()).all()
-    posts = StudentBodyPost.query.filter_by(body_id=body.id).order_by(StudentBodyPost.created_at.desc()).all()
+    posts = Post.query.filter_by(body_id=body.id).order_by(Post.created_at.desc()).all()
 
     return render_template("body_dashboard.html", body=body, events=events, posts=posts, form=form, post_form=post_form)
 
@@ -106,7 +106,7 @@ def create_post(body_id):
             post_form.image.data.save(filepath)
             image_url = f"uploads/{filename}"
 
-        post = StudentBodyPost(
+        post = Post(
             body_id=body.id,
             title=post_form.title.data,
             content=post_form.content.data,

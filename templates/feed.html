@@ -121,11 +121,30 @@
         </aside>
 
         <main class="lg:col-span-6 space-y-0 lg:space-y-6">
+            <div class="mb-6">
+                <a href="{{ url_for('posts.create_post') }}" class="w-full text-center block bg-blue-600 text-white px-4 py-3 rounded-lg shadow hover:bg-blue-700 font-medium">
+                    Create Post
+                </a>
+            </div>
             {% for post in posts %}
             <div class="bg-white sm:rounded-2xl sm:shadow mb-6 lg:mb-0 border-b sm:border-none">
-                <div class="p-4 flex justify-between items-start gap-4">
+                <div class="p-4 flex items-center gap-3">
+                    {% if post.author.user_type == 'student' %}
+                        <img src="{{ url_for('static', filename=post.author.profile_pic or 'default-profile.png') }}" class="w-10 h-10 rounded-full object-cover">
+                        <div>
+                            <a href="{{ url_for('profile.view_profile', user_id=post.author.id) }}" class="font-semibold text-gray-800 hover:underline">{{ post.author.name }}</a>
+                            <p class="text-xs text-gray-500">{{ post.created_at.strftime('%B %d, %Y') }}</p>
+                        </div>
+                    {% else %}
+                        <img src="{{ url_for('static', filename=post.author.logo or 'default-logo.png') }}" class="w-10 h-10 rounded-full object-cover">
+                        <div>
+                            <p class="font-semibold text-gray-800">{{ post.author.name }}</p>
+                            <p class="text-xs text-gray-500">{{ post.created_at.strftime('%B %d, %Y') }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="p-4">
                     <h2 class="text-lg font-semibold text-gray-800">{{ post.title }}</h2>
-                    <span class="text-sm text-gray-500 flex-shrink-0">{{ post.created_at.strftime("%b %d") }}</span>
                 </div>
 
                 {% if post.image_url %}
