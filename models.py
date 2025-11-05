@@ -45,6 +45,10 @@ class User(db.Model, UserMixin):
     def user_type(self):
         return "student"
 
+    @property
+    def is_student_body(self):
+        return False
+
 
 class StudentBody(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -68,6 +72,10 @@ class StudentBody(db.Model, UserMixin):
     @property
     def user_type(self):
         return "body"
+
+    @property
+    def is_student_body(self):
+        return True
 
 
 # ========================

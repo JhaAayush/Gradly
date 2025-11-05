@@ -88,3 +88,51 @@ def comment(post_id):
         db.session.add(new_comment)
         db.session.commit()
     return redirect(url_for("posts.feed"))
+
+
+# ---------- Manage Posts ----------
+@posts_bp.route("/manage")
+@login_required
+def manage_posts():
+    if not getattr(current_user, "is_student_body", False):
+        flash("Only student bodies can manage posts.", "error")
+        return redirect(url_for("posts.feed"))
+
+    posts = StudentBodyPost.query.filter_by(body_id=current_user.id).order_by(StudentBodyPost.created_at.desc()).all()
+    return render_template("manage_posts.html", posts=posts)
+
+
+# ---------- Edit Post ----------
+@posts_bp.route("/edit/<int:post_id>", methods=["GET", "POST"])
+@login_required
+def edit_post(post_id):
+    post = StudentBodyPost.query.get_or_404(post_id)
+
+    if post.body_id != current_user.id:
+        flash("You are not authorized to edit this post.", "error")
+        return redirect(url_for("posts.manage_posts"))
+
+    if request.method == "POST":
+        post.title = request.form.get("title")
+        post.content = request.form.get("content")
+        db.session.commit()
+        flash("Post updated successfully!", "success")
+        return redirect(url_for("posts.manage_posts"))
+
+    return render_template("edit_post.html", post=post)
+
+
+# ---------- Delete Post ----------
+@posts_bp.route("/delete/<int:post_id>", methods=["POST"])
+@login_required
+def delete_post(post_id):
+    post = StudentBodyPost.query.get_or_404(post_id)
+
+    if post.body_id != current_user.id:
+        flash("You are not authorized to delete this post.", "error")
+        return redirect(url_for("posts.manage_posts"))
+
+    db.session.delete(post)
+    db.session.commit()
+    flash("Post deleted successfully!", "success")
+    return redirect(url_for("posts.manage_posts"))
