@@ -23,8 +23,12 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Config
-app.config['SECRET_KEY'] = 'yoursecretkey'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///gradly.db'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default_dev_key')
+
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
+    'DATABASE_URL',
+    'sqlite:///gradly.db'  # Fallback to local SQLite for development
+).replace("postgres://", "postgresql://", 1)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Init extensions
