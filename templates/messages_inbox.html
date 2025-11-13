@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Messages{% endblock %}
+
+{% block content %}
+<div class="bg-white/70 backdrop-blur-lg p-6 md:p-8 rounded-2xl shadow-lg border border-slate-200">
+    <h1 class="text-3xl font-extrabold text-slate-800 mb-6">Your Conversations</h1>
+
+    <div class="divide-y divide-slate-200">
+        {% for chat in chat_partners %}
+        <a href="{{ url_for('messaging.view_conversation', conversation_id=chat.conversation_id) }}"
+            class="flex items-center p-4 -mx-4 hover:bg-slate-100/50 rounded-lg transition-colors duration-200">
+            <div class="relative flex-shrink-0">
+                <img src="{{ chat.user.profile_pic_url }}" alt="{{ chat.user.name }}"
+                    class="w-14 h-14 rounded-full object-cover border-2 border-slate-200">
+                {% if chat.unread_count > 0 %}
+                <span
+                    class="absolute top-0 right-0 block h-4 w-4 rounded-full bg-red-500 text-white text-xs font-bold flex items-center justify-center ring-2 ring-white">
+                    {{ chat.unread_count }}
+                </span>
+                {% endif %}
+            </div>
+            <div class="ml-4 flex-grow min-w-0">
+                <h2 class="text-lg font-bold text-slate-800 truncate">{{ chat.user.name }}</h2>
+                {% if chat.last_message %}
+                <p class="text-sm text-slate-500 truncate">
+                    {% if chat.last_message.sender_id == current_user.get_id() %}
+                    <span class="font-medium">You:</span>
+                    {% endif %}
+                    {{ chat.last_message.content }}
+                </p>
+                {% else %}
+                <p class="text-sm text-slate-400 italic">No messages yet.</p>
+                {% endif %}
+            </div>
+            {% if chat.last_message %}
+            <div class="ml-4 text-right flex-shrink-0 text-xs text-slate-400">
+                <span>{{ chat.last_message.timestamp.strftime('%d %b') }}</span>
+                <span class="block">{{ chat.last_message.timestamp.strftime('%I:%M %p') }}</span>
+            </div>
+            {% endif %}
+        </a>
+        {% else %}
+        <div class="text-center py-16">
+            <i class="fa fa-comments fa-3x text-slate-300 mb-4"></i>
+            <h2 class="text-xl font-semibold text-slate-600">No conversations yet</h2>
+            <p class="text-slate-400 mt-2">Find a student or body and send them a message to get started.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

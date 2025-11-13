@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Chat with {{ other_user_details.name }}{% endblock %}
+
+{% block content %}
+<div class="bg-white/70 backdrop-blur-lg rounded-2xl shadow-lg border border-slate-200 flex flex-col"
+    style="height: calc(100vh - 200px);">
+
+    <!-- Header -->
+    <div class="flex items-center p-4 border-b border-slate-200 flex-shrink-0">
+        <a href="{{ url_for('messaging.inbox') }}" class="text-slate-500 hover:text-sky-500 mr-3">
+            <i class="fa fa-arrow-left"></i>
+        </a>
+        <img src="{{ other_user_details.profile_pic_url }}" alt="{{ other_user_details.name }}"
+            class="w-10 h-10 rounded-full object-cover mr-3">
+        <div>
+            <h1 class="text-lg font-bold text-slate-800">{{ other_user_details.name }}</h1>
+            <a href="{{ other_user_details.url }}" class="text-xs text-sky-600 hover:underline">View Profile</a>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    <div class="flex-grow p-4 md:p-6 space-y-4 overflow-y-auto">
+        {% for message in messages %}
+        {% if message.sender_id == current_user.get_id() %}
+        <!-- Sent Message -->
+        <div class="flex justify-end">
+            <div class="max-w-xs md:max-w-md lg:max-w-lg">
+                <div class="bg-sky-500 text-white p-3 rounded-lg rounded-br-none shadow">
+                    <p>{{ message.content }}</p>
+                </div>
+                <span class="text-xs text-slate-400 float-right mt-1">{{ message.timestamp.strftime('%I:%M %p')
+                    }}</span>
+            </div>
+        </div>
+        {% else %}
+        <!-- Received Message -->
+        <div class="flex justify-start">
+            <div class="max-w-xs md:max-w-md lg:max-w-lg">
+                <div class="bg-slate-100 text-slate-800 p-3 rounded-lg rounded-bl-none shadow">
+                    <p>{{ message.content }}</p>
+                </div>
+                <span class="text-xs text-slate-400 float-left mt-1">{{ message.timestamp.strftime('%I:%M %p') }}</span>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+
+    <!-- Input Form -->
+    <div class="p-4 bg-slate-50 border-t border-slate-200 flex-shrink-0">
+        <form method="POST" action="{{ url_for('messaging.view_conversation', conversation_id=conversation_id) }}"
+            class="flex items-center space-x-3">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> <!-- If you are using CSRF, add this -->
+            <textarea name="content" rows="1"
+                class="flex-grow p-3 bg-white border border-slate-300 rounded-full resize-none focus:outline-none focus:ring-2 focus:ring-sky-500"
+                placeholder="Type your message..."></textarea>
+            <button type="submit"
+                class="w-12 h-12 rounded-full bg-sky-500 text-white flex items-center justify-center flex-shrink-0 hover:bg-sky-600 transition-colors">
+                <i class="fa fa-paper-plane"></i>
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Auto-scroll to the bottom of the chat
+    document.addEventListener('DOMContentLoaded', () => {
+        const chatBox = document.querySelector('.overflow-y-auto');
+        if(chatBox) {
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // Auto-expand textarea
+        const textarea = document.querySelector('textarea[name="content"]');
+        if(textarea) {
+            textarea.addEventListener('input', () => {
+                textarea.style.height = 'auto';
+                textarea.style.height = (textarea.scrollHeight) + 'px';
+            });
+            textarea.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    textarea.closest('form').submit();
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
