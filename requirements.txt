@@ -18,6 +18,7 @@ Flask-SQLAlchemy==3.1.1
 Flask-Uploads==0.2.1
 Flask-WTF==1.2.2
 greenlet==3.2.4
+gunicorn==23.0.0
 idna==3.10
 itsdangerous==2.2.0
 Jinja2==3.1.6
@@ -26,6 +27,7 @@ MarkupSafe==3.0.2
 numpy==2.3.2
 oauthlib==3.3.1
 openpyxl==3.1.5
+packaging==25.0
 pandas==2.3.2
 pdfminer.six==20250506
 pdfplumber==0.11.7
