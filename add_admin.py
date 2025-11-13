@@ -18,6 +18,11 @@ def create_admin_users():
             "email": "prateekg.mbaba04@iimamritsar.ac.in",
         },
         {
+            "id": "MBABA04002",
+            "name": "Aayush Jha",
+            "email": "aayushj.mbaba04@iimamritsar.ac.in",
+        },
+         {
             "id": "MBABA04020",
             "name": "Preksha Jha",
             "email": "prekshaj.mbaba04@iimamritsar.ac.in",
