@@ -97,7 +97,7 @@
                         class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-200 py-2 z-50">
                         <a href="{% if current_user.user_type == 'student' %}{{ url_for('profile.view_profile', user_id=current_user.id) }}{% else %}{{ url_for('studentbody.body_profile', body_id=current_user.id) }}{% endif %}"
                             class="block px-4 py-2 text-slate-700 hover:bg-slate-100">View Profile</a>
-                        <a href="#" class="block px-4 py-2 text-slate-400 cursor-not-allowed">See Messages</a>
+                        <a href="{{ url_for('messages.list_conversations') }}" class="block px-4 py-2 text-slate-700 hover:bg-slate-100">See Messages</a>
                         <a href="{{ url_for('auth.logout') }}"
                             class="block px-4 py-2 text-red-600 hover:bg-red-100">Logout</a>
                     </div>

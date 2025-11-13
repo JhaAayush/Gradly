@@ -175,3 +175,36 @@ class PostVote(db.Model):
     post_id = db.Column(db.Integer, db.ForeignKey("posts.id"), nullable=False)
     user_id = db.Column(db.String(15), db.ForeignKey("user.id"), nullable=False)
     vote = db.Column(db.Integer, nullable=False)  # +1 or -1
+
+
+# ========================
+# Messaging System
+# ========================
+
+class Conversation(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+
+    # Participants - using generic user_id fields to hold either student or body ID
+    user_one_id = db.Column(db.String(50), nullable=False)
+    user_two_id = db.Column(db.String(50), nullable=False)
+
+    messages = db.relationship('Message', backref='conversation', lazy=True, cascade="all, delete-orphan")
+
+    # To easily get the last message for sorting
+    last_message_time = db.Column(db.DateTime, default=datetime.utcnow)
+
+    __table_args__ = (
+        db.UniqueConstraint('user_one_id', 'user_two_id', name='_user_pair_uc'),
+    )
+
+
+class Message(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    conversation_id = db.Column(db.Integer, db.ForeignKey('conversation.id'), nullable=False)
+
+    sender_id = db.Column(db.String(50), nullable=False) # 'U_123' or 'B_45'
+    receiver_id = db.Column(db.String(50), nullable=False)
+
+    content = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    is_read = db.Column(db.Boolean, default=False)

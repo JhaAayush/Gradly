@@ -25,7 +25,15 @@
             <p class="mt-3 text-sm bg-sky-500/20 text-sky-200 px-4 py-1 inline-block rounded-full font-semibold">CGPA:
                 {{ user.cgpa }}</p>
             {% endif %}
-            
+
+            {% if current_user.get_id() != user.get_id() %}
+            <div class="mt-5">
+                <a href="{{ url_for('messages.start_chat', receiver_id=user.get_id()) }}"
+                   class="bg-sky-500 text-white font-semibold px-6 py-2 rounded-full hover:bg-sky-600 transition-all duration-300 shadow-lg">
+                    <i class="fa fa-paper-plane mr-2"></i> Send Message
+                </a>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>

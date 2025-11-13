@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Your Messages{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold text-slate-800 mb-6">Your Conversations</h1>
+
+    <div class="bg-white/70 backdrop-blur-lg p-6 rounded-2xl shadow-lg border border-slate-200">
+        <div class="flow-root">
+            <ul role="list" class="divide-y divide-slate-200">
+                {% for chat in chat_partners %}
+                <li class="py-4 sm:py-5">
+                    <a href="{{ url_for('messages.chat', conversation_id=chat.conversation_id) }}"
+                        class="flex items-center space-x-4 group">
+                        <div class="flex-shrink-0">
+                            <img class="h-10 w-10 rounded-full object-cover border-2 border-slate-200 group-hover:border-sky-400 transition-colors"
+                                src="{{ url_for('static', filename=chat.partner.profile_pic or chat.partner.logo or 'default-profile.png') }}"
+                                alt="{{ chat.partner.name }}'s profile picture">
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-md font-semibold text-slate-800 truncate group-hover:text-sky-500 transition-colors">
+                                {{ chat.partner.name }}
+                            </p>
+                            <p class="text-sm text-slate-500 truncate">
+                                {{ chat.last_message }}
+                            </p>
+                        </div>
+                        <div class="text-right text-sm text-slate-400">
+                            <span>{{ chat.timestamp.strftime('%b %d, %Y') }}</span>
+                        </div>
+                    </a>
+                </li>
+                {% else %}
+                <li class="py-10 text-center">
+                    <p class="text-slate-500">You have no conversations yet.</p>
+                    <p class="text-slate-400 text-sm mt-2">Start a new chat by visiting someone's profile.</p>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
