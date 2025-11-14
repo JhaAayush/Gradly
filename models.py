@@ -1,6 +1,11 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
+import os
+import click
+from sqlalchemy import event
+from flask import current_app
+from flask.cli import with_appcontext
 
 db = SQLAlchemy()
 
@@ -183,16 +188,10 @@ class PostVote(db.Model):
 
 class Conversation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-
-    # Participants - using generic user_id fields to hold either student or body ID
     user_one_id = db.Column(db.String(50), nullable=False)
     user_two_id = db.Column(db.String(50), nullable=False)
-
     messages = db.relationship('Message', backref='conversation', lazy=True, cascade="all, delete-orphan")
-
-    # To easily get the last message for sorting
     last_message_time = db.Column(db.DateTime, default=datetime.utcnow)
-
     __table_args__ = (
         db.UniqueConstraint('user_one_id', 'user_two_id', name='_user_pair_uc'),
     )
@@ -201,10 +200,61 @@ class Conversation(db.Model):
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     conversation_id = db.Column(db.Integer, db.ForeignKey('conversation.id'), nullable=False)
-
-    sender_id = db.Column(db.String(50), nullable=False) # 'U_123' or 'B_45'
+    sender_id = db.Column(db.String(50), nullable=False) 
     receiver_id = db.Column(db.String(50), nullable=False)
-
     content = db.Column(db.Text, nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     is_read = db.Column(db.Boolean, default=False)
+
+
+# ========================
+# NEW: Event Listeners & CLI
+# ========================
+
+@event.listens_for(Post, 'after_delete')
+def delete_post_image(mapper, connection, target):
+    """
+    Listens for a Post object deletion and removes the associated
+    image file from the static/uploads folder.
+    """
+    if target.image_url:
+        try:
+            # Assumes UPLOAD_FOLDER is 'static/uploads'
+            upload_folder = current_app.config["UPLOAD_FOLDER"]
+            filename = os.path.basename(target.image_url)
+            file_path = os.path.join(upload_folder, filename)
+
+            if os.path.exists(file_path):
+                os.remove(file_path)
+        except Exception as e:
+            # Log the error but don't block deletion
+            print(f"Error deleting file {target.image_url}: {e}")
+
+
+def register_cli_commands(app):
+    """Registers CLI commands with the Flask app."""
+    
+    @app.cli.command("cleanup-posts")
+    @with_appcontext
+    def cleanup_posts_command():
+        """Deletes posts older than 7 days."""
+        try:
+            seven_days_ago = datetime.utcnow() - timedelta(days=7)
+            old_posts = Post.query.filter(Post.created_at <= seven_days_ago).all()
+            
+            if not old_posts:
+                click.echo("No old posts found to delete.")
+                return
+
+            post_count = len(old_posts)
+            
+            # The 'after_delete' event listener will handle file deletion
+            for post in old_posts:
+                db.session.delete(post)
+            
+            db.session.commit()
+            click.echo(f"Successfully deleted {post_count} old post(s).")
+
+        except Exception as e:
+            db.session.rollback()
+            click.echo(f"Error during post cleanup: {e}")
