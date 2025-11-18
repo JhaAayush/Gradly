@@ -44,24 +44,13 @@ To get Gradly up and running on your local machine, follow these steps:
     pip install -r requirements.txt
     ```
 
-4.  **Set up environment variables:**
-
-    Create a `.env` file in the root directory and add the necessary environment variables. These typically include database connection strings, secret keys, and Google OAuth credentials.
-
-    ```
-    SECRET_KEY='your_secret_key'
-    DATABASE_URL='sqlite:///instance/site.db'
-    GOOGLE_CLIENT_ID='your_google_client_id'
-    GOOGLE_CLIENT_SECRET='your_google_client_secret'
-    ```
-
-5.  **Initialize the database:**
+4.  **Initialize the database:**
 
     ```bash
     flask db upgrade
     ```
 
-6.  **Run the application:**
+5.  **Run the application:**
 
     ```bash
     flask run
@@ -75,11 +64,3 @@ To get Gradly up and running on your local machine, follow these steps:
 -   **Dashboard:** After logging in, navigate to your personalized dashboard.
 -   **Student Body Features:** If you are a student body, you can create posts, manage events, and update your profile.
 -   **Student Features:** As a student, you can view the feed, check out events, message other users, and manage your profile.
-
-## Contributing
-
-(Instructions for contributing to the project, if applicable)
-
-## License
-
-(License information, e.g., MIT, Apache 2.0)
