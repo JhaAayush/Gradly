@@ -85,7 +85,7 @@ class Task(db.Model):
     title = db.Column(db.String(200), nullable=False)
     due_date = db.Column(db.DateTime, nullable=True)
     is_done = db.Column(db.Boolean, default=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.String(100), db.ForeignKey('user.id'))
 
 
 class Event(db.Model):
